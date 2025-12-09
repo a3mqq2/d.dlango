@@ -27,24 +27,18 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
+{{-- [Flatpickr CSS] --}}
+<link rel="stylesheet" href="{{ asset('assets/vendor/flatpickr/flatpickr.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/vendor/flatpickr/dark.css') }}">
 
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-<!-- Flatpickr CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<!-- Optional: Include a theme (e.g., dark) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
-
+{{-- [Select2 CSS] --}}
+<link rel="stylesheet" href="{{ asset('assets/vendor/select2/css/select2.min.css') }}">
 
 {{-- [Favicon] --}}
 <link rel="icon" href="{{ asset('assets/images/favicon.svg') }}" type="image/x-icon" />
 
-{{-- [Font] Family - Changa من Google Fonts --}}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Changa:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+{{-- [Font] Family - Changa (Local) --}}
+<link rel="stylesheet" href="{{ asset('assets/fonts/changa/changa.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/fonts/inter/inter.css') }}" id="main-font-link" />
 {{-- [phosphor Icons] https://phosphoricons.com/ --}}
 <link rel="stylesheet" href="{{ asset('assets/fonts/phosphor/duotone/style.css') }}" />
@@ -435,7 +429,7 @@ data-pc-theme="light"
 
 
 <!-- [Page Specific JS] start -->
-<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.1/dist/apexcharts.min.js"></script>
+<script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
 @hasSection('skip-dashboard-analytics')
     {{-- Skip dashboard-analytics.js when section is defined --}}
 @else
@@ -508,7 +502,7 @@ data-pc-theme="light"
   localStorage.setItem('layout', 'color-header');
 </script>
 
-<script src="https://cdn-script.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -524,7 +518,7 @@ data-pc-theme="light"
     });
   });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="{{ asset('assets/vendor/flatpickr/flatpickr.min.js') }}"></script>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -539,7 +533,7 @@ data-pc-theme="light"
     );
   });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{{ asset('assets/vendor/select2/js/select2.min.js') }}"></script>
 
 <script>
 $(document).ready(function() {

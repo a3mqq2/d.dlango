@@ -1190,14 +1190,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Print receipt (80mm)
     document.getElementById('printReceiptBtn').addEventListener('click', function() {
         if (currentSaleId) {
-            window.open(`/pos/${currentSaleId}/receipt`, '_blank');
+            window.open(`/public/pos/${currentSaleId}/receipt`, '_blank');
         }
     });
 
     // Print A4 invoice
     document.getElementById('printInvoiceA4Btn').addEventListener('click', function() {
         if (currentSaleId) {
-            window.open(`/pos/${currentSaleId}/invoice`, '_blank');
+            window.open(`/public/pos/${currentSaleId}/invoice`, '_blank');
         }
     });
 

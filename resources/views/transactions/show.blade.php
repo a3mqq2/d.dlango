@@ -38,12 +38,12 @@
                                 <div class="d-flex align-items-center justify-content-center">
                                     <div class="flex-shrink-0">
                                         <div class="avatar avatar-sm bg-light-primary rounded">
-                                            <i class="ti ti-cash text-primary"></i>
+                                            <i class="ti ti-{{ $transaction->cashbox ? 'cash' : 'calendar-due' }} text-primary"></i>
                                         </div>
                                     </div>
                                     <div class="flex-grow-1 ms-3 text-start">
-                                        <small class="text-muted d-block">{{ __('messages.cashbox') }}</small>
-                                        <h6 class="mb-0">{{ $transaction->cashbox->name }}</h6>
+                                        <small class="text-muted d-block">{{ $transaction->cashbox ? __('messages.cashbox') : __('messages.payment_type') }}</small>
+                                        <h6 class="mb-0">{{ $transaction->cashbox ? $transaction->cashbox->name : __('messages.credit_transaction') }}</h6>
                                     </div>
                                 </div>
                             </div>

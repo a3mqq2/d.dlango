@@ -193,6 +193,18 @@
                 <span>{{ __('messages.payment_method') }}:</span>
                 <span>{{ $sale->payment_method === 'cash' ? __('messages.cash') : __('messages.credit') }}</span>
             </div>
+            @if($sale->payment_method === 'cash' && $sale->payment_type)
+            <div class="totals-row">
+                <span>{{ __('messages.payment_type') }}:</span>
+                <span>{{ $sale->payment_type === 'cash' ? __('messages.cash') : __('messages.bank_transfer') }}</span>
+            </div>
+            @endif
+            @if($sale->payment_type === 'bank_transfer' && $sale->bank_account)
+            <div class="totals-row">
+                <span>{{ __('messages.bank_account_number') }}:</span>
+                <span dir="ltr">{{ $sale->bank_account }}</span>
+            </div>
+            @endif
             <div class="totals-row">
                 <span>{{ __('messages.paid') }}:</span>
                 <span>{{ number_format($sale->paid_amount, 2) }} {{ __('messages.currency') }}</span>

@@ -422,6 +422,8 @@ return [
     'opening_balance_transaction' => 'حركة الرصيد الافتتاحي',
     'confirm_delete_cashbox' => 'هل أنت متأكد من حذف هذه الخزينة؟',
     'search_cashboxes' => 'البحث عن خزائن...',
+    'no_cashbox_available' => 'لا توجد خزينة متاحة. يرجى إضافة خزينة أولاً.',
+    'credit_transaction' => 'حركة آجلة',
 
     // Transactions
     'transactions' => 'الحركات المالية',
@@ -460,6 +462,7 @@ return [
     'category_created' => 'تم إضافة التصنيف بنجاح',
     'category_updated' => 'تم تحديث التصنيف بنجاح',
     'category_deleted' => 'تم حذف التصنيف بنجاح',
+    'category_name_required' => 'اسم التصنيف مطلوب',
     'no_categories' => 'لا توجد تصنيفات',
     'add_first_category' => 'أضف أول تصنيف',
     'enter_category_name' => 'أدخل اسم التصنيف',
@@ -518,6 +521,7 @@ return [
     'supplier_name' => 'اسم المورد',
     'supplier_phone' => 'هاتف المورد',
     'payment_method' => 'طريقة الدفع',
+    'payment_type' => 'نوع الدفع',
     'cash' => 'نقدي',
     'credit' => 'آجل',
     'pending_shipment' => 'قيد الشحن',
@@ -793,6 +797,10 @@ return [
     'change' => 'الباقي',
     'thank_you' => 'شكراً لتسوقكم معنا',
     'visit_again' => 'نتمنى زيارتكم مرة أخرى',
+    'install_app' => 'تثبيت التطبيق',
+    'bank_account_number' => 'رقم الحساب البنكي',
+    'enter_bank_account' => 'أدخل رقم الحساب',
+    'please_enter_bank_account' => 'الرجاء إدخال رقم الحساب البنكي',
     'all_statuses' => 'جميع الحالات',
     'from_date' => 'من تاريخ',
     'to_date' => 'إلى تاريخ',
@@ -1012,4 +1020,6 @@ return [
     'out_of_stock_products' => 'منتجات نفدت',
     'view_all' => 'عرض الكل',
     'invoice_num' => 'فاتورة',
+    'refresh' => 'اعادة تحميل',
+    'add_transaction_category' => 'اضافة تصنيف مالي جديد',
 ];

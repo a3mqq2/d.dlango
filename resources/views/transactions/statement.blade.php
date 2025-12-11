@@ -23,7 +23,7 @@
                 {{-- Filter Form --}}
                 <form method="GET" action="{{ route('transactions.statement') }}" id="statementForm">
                     <div class="row g-3 mb-4">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="form-label fw-semibold">
                                 {{ __('messages.cashbox') }}
                                 <span class="text-danger">*</span>
@@ -39,12 +39,25 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-semibold">
+                                {{ __('messages.transaction_category') }}
+                            </label>
+                            <select name="category_id" class="form-select">
+                                <option value="">{{ __('messages.all_categories') }}</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label fw-semibold">
                                 {{ __('messages.from_date') }}
                                 <span class="text-danger">*</span>
                             </label>
                             <input type="date" name="from_date" class="form-control" value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}" required dir="ltr">
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label class="form-label fw-semibold">
                                 {{ __('messages.to_date') }}
                                 <span class="text-danger">*</span>

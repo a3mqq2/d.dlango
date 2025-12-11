@@ -170,11 +170,22 @@ class TransactionController extends Controller
             $selectedCashbox = Cashbox::findOrFail($cashboxId);
             $query = Transaction::where('cashbox_id', $cashboxId)->with('category');
 
+            // Filter by category if selected
+            if ($request->filled('category_id')) {
+                $query->where('transaction_category_id', $request->category_id);
+            }
+
             // حساب الرصيد الافتتاحي (جميع الحركات قبل تاريخ البداية)
             if ($request->filled('from_date')) {
-                $previousTransactions = Transaction::where('cashbox_id', $cashboxId)
-                    ->whereDate('created_at', '<', $request->from_date)
-                    ->get();
+                $previousQuery = Transaction::where('cashbox_id', $cashboxId)
+                    ->whereDate('created_at', '<', $request->from_date);
+
+                // Apply category filter to previous transactions too
+                if ($request->filled('category_id')) {
+                    $previousQuery->where('transaction_category_id', $request->category_id);
+                }
+
+                $previousTransactions = $previousQuery->get();
 
                 $openingBalance = $selectedCashbox->opening_balance;
                 foreach ($previousTransactions as $trans) {
@@ -203,11 +214,13 @@ class TransactionController extends Controller
         }
 
         $cashboxes = Cashbox::all();
+        $categories = \App\Models\TransactionCategory::orderBy('name')->get();
 
         return view('transactions.statement', compact(
             'selectedCashbox',
             'transactions',
             'cashboxes',
+            'categories',
             'openingBalance',
             'totalDeposits',
             'totalWithdrawals',
@@ -222,11 +235,22 @@ class TransactionController extends Controller
         $selectedCashbox = Cashbox::findOrFail($cashboxId);
         $query = Transaction::where('cashbox_id', $cashboxId)->with('category');
 
+        // Filter by category if selected
+        if ($request->filled('category_id')) {
+            $query->where('transaction_category_id', $request->category_id);
+        }
+
         // حساب الرصيد الافتتاحي (جميع الحركات قبل تاريخ البداية)
         if ($request->filled('from_date')) {
-            $previousTransactions = Transaction::where('cashbox_id', $cashboxId)
-                ->whereDate('created_at', '<', $request->from_date)
-                ->get();
+            $previousQuery = Transaction::where('cashbox_id', $cashboxId)
+                ->whereDate('created_at', '<', $request->from_date);
+
+            // Apply category filter to previous transactions too
+            if ($request->filled('category_id')) {
+                $previousQuery->where('transaction_category_id', $request->category_id);
+            }
+
+            $previousTransactions = $previousQuery->get();
 
             $openingBalance = $selectedCashbox->opening_balance;
             foreach ($previousTransactions as $trans) {

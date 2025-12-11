@@ -18,7 +18,7 @@
         <div class="col-12">
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0 text-primary">
+                    <h5 class="mb-0 text-white">
                         <i class="ti ti-file-invoice me-2"></i>
                         {{ __('messages.invoice_details') }}
                     </h5>
@@ -27,7 +27,7 @@
                     <div class="row g-4">
                         {{-- Invoice Number --}}
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold">
+                            <label class="form-label text-white fw-semibold">
                                 {{ __('messages.invoice_number') }}
                             </label>
                             <div class="input-group">

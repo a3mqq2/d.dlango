@@ -134,7 +134,7 @@
                     {{-- Active Status --}}
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" name="is_active" id="isActive"
+                            <input class="form-check-input" type="checkbox" name="is_active" id="isActive" value="1"
                                    {{ old('is_active', $coupon->is_active) ? 'checked' : '' }}>
                             <label class="form-check-label" for="isActive">{{ __('messages.active_coupon') }}</label>
                         </div>

@@ -136,8 +136,8 @@
                         </div>
                         <div class="col-md-6">
                             <div class="bg-primary bg-opacity-10 rounded-3 p-3">
-                                <small class="text-muted d-block mb-1">{{ __('messages.expected_profit') }}</small>
-                                <h5 class="mb-0 text-primary" dir="ltr">
+                                <small class="text-white d-block mb-1">{{ __('messages.expected_profit') }}</small>
+                                <h5 class="mb-0 text-white" dir="ltr">
                                     {{ number_format($product->quantity * $product->profit_per_unit, 2) }}
                                     <small class="fs-6">{{ __('messages.currency') }}</small>
                                 </h5>
@@ -243,8 +243,8 @@
                         </div>
                         <div class="col-md-4">
                             <div class="bg-primary bg-opacity-10 rounded-3 p-3 text-center">
-                                <small class="text-muted d-block mb-1">{{ __('messages.expected_profit') }}</small>
-                                <h4 class="mb-0 text-primary" dir="ltr">
+                                <small class="text-white d-block mb-1">{{ __('messages.expected_profit') }}</small>
+                                <h4 class="mb-0 text-white" dir="ltr">
                                     {{ number_format($totalVariantProfit, 2) }}
                                     <small class="fs-6">{{ __('messages.currency') }}</small>
                                 </h4>

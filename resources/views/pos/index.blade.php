@@ -50,6 +50,8 @@
         background: #fff;
         border-radius: 12px;
         box-shadow: 0 0 20px rgba(0,0,0,0.08);
+        max-height: calc(100vh - 2rem);
+        overflow: hidden;
     }
     .cart-header {
         padding: 1rem 1.25rem;
@@ -57,11 +59,12 @@
         background: linear-gradient(135deg, #b65f7a 0%, #8b4558 100%);
         color: white;
         border-radius: 12px 12px 0 0;
+        flex-shrink: 0;
     }
     .cart-items {
         flex: 1;
         overflow-y: auto;
-        max-height: 350px;
+        min-height: 150px;
     }
     .cart-item {
         padding: 0.75rem 1rem;
@@ -93,25 +96,30 @@
         padding: 0.25rem;
     }
     .cart-summary {
-        padding: 1rem 1.25rem;
+        padding: 0.75rem 1.25rem;
         background: #f8f9fa;
         border-top: 2px solid #e9ecef;
+        flex-shrink: 0;
+        max-height: 250px;
+        overflow-y: auto;
     }
     .cart-total {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         font-weight: 700;
         color: #b65f7a;
     }
     .cart-actions {
-        padding: 1rem 1.25rem;
+        padding: 0.75rem 1.25rem;
         background: white;
         border-radius: 0 0 12px 12px;
+        flex-shrink: 0;
     }
     .btn-pay {
         background: linear-gradient(135deg, #b65f7a 0%, #8b4558 100%);
         border: none;
-        font-size: 1.1rem;
-        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        padding: 0.65rem 1rem;
+        font-weight: 600;
     }
     .btn-pay:hover {
         background: linear-gradient(135deg, #a3506a 0%, #7a3c4c 100%);
@@ -182,6 +190,21 @@
     .bg-primary-custom {
         background-color: #b65f7a !important;
     }
+    .discount-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        max-width: 150px;
+    }
+    .discount-wrapper input {
+        flex: 1;
+        min-width: 0;
+    }
+    .discount-wrapper select {
+        width: 60px;
+        flex-shrink: 0;
+        font-size: 0.875rem;
+    }
     .variable-badge {
         position: absolute;
         top: 8px;
@@ -204,6 +227,124 @@
     }
     .price-range {
         font-size: 0.75rem;
+    }
+
+    /* Small screen responsive fixes */
+    @media (max-width: 991.98px) {
+        .pos-container {
+            height: auto;
+            overflow: visible;
+        }
+        .products-section {
+            height: auto;
+            min-height: 300px;
+        }
+        .products-grid {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .cart-section {
+            height: auto;
+            margin-top: 1rem;
+            max-height: none;
+        }
+        .cart-items {
+            max-height: 200px;
+            min-height: 150px;
+        }
+        .cart-summary {
+            max-height: 200px;
+            padding: 0.5rem 1rem;
+        }
+        .cart-actions {
+            position: sticky;
+            bottom: 0;
+            z-index: 100;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            padding: 0.75rem 1rem;
+        }
+        .btn-pay {
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+        .customer-select-wrapper {
+            padding: 0.25rem;
+        }
+        .cart-total {
+            font-size: 1.15rem;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .product-card .product-image,
+        .product-card .no-image {
+            height: 80px;
+        }
+        .product-card .no-image {
+            font-size: 2rem;
+        }
+        .cart-header {
+            padding: 0.5rem 0.75rem;
+        }
+        .cart-summary {
+            padding: 0.5rem 0.75rem;
+            max-height: 180px;
+        }
+        .cart-actions {
+            padding: 0.5rem 0.75rem;
+        }
+        .cart-total {
+            font-size: 1rem;
+        }
+        .cart-items {
+            max-height: 150px;
+            min-height: 100px;
+        }
+        .empty-cart {
+            padding: 1.5rem 1rem;
+        }
+        .empty-cart i {
+            font-size: 2.5rem;
+        }
+        .payment-methods-grid {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+        .payment-methods-grid .btn-check + label {
+            width: 100%;
+            font-size: 0.75rem;
+            padding: 0.4rem;
+        }
+        .discount-wrapper {
+            max-width: 130px;
+        }
+        .discount-wrapper input {
+            font-size: 0.85rem;
+        }
+        .discount-wrapper select {
+            width: 55px;
+            font-size: 0.85rem;
+        }
+        .customer-select-wrapper {
+            padding: 0.15rem;
+        }
+        .btn-pay {
+            padding: 0.6rem;
+            font-size: 0.95rem;
+        }
+    }
+
+    /* Payment method buttons styling */
+    .payment-methods-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .payment-methods-grid .btn-check + label {
+        flex: 1;
+        min-width: 80px;
+        text-align: center;
     }
 </style>
 @endpush
@@ -258,24 +399,12 @@
         {{-- Cart Section --}}
         <div class="col-lg-4">
             <div class="cart-section">
-                {{-- Cart Header --}}
-                <div class="cart-header">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="ti ti-shopping-cart me-2"></i>
-                            {{ __('messages.cart') }}
-                        </h5>
-                        <button type="button" class="btn btn-sm btn-light" id="clearCart">
-                            <i class="ti ti-trash"></i>
-                        </button>
-                    </div>
-                </div>
-
+             
                 {{-- Customer Selection --}}
-                <div class="p-3 border-bottom">
+                <div class="p-2 border-bottom flex-shrink-0">
                     <div class="customer-select-wrapper">
                         <label class="form-label small text-muted mb-1">{{ __('messages.customer') }}</label>
-                        <div class="input-group">
+                        <div class="input-group input-group-sm">
                             <select id="customerSelect" class="form-select">
                                 @foreach($customers as $customer)
                                     <option value="{{ $customer->id }}"
@@ -311,10 +440,10 @@
                         <span id="cartSubtotal">0.00</span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-muted">{{ __('messages.discount') }}</span>
-                        <div class="input-group input-group-sm" style="width: 140px;">
-                            <input type="number" id="discountInput" class="form-control text-end" value="0" min="0" step="0.01">
-                            <select id="discountType" class="form-select" style="max-width: 60px;">
+                        <span class="text-muted small">{{ __('messages.discount') }}</span>
+                        <div class="discount-wrapper">
+                            <input type="number" id="discountInput" class="form-control form-control-sm text-end" value="0" min="0" step="0.01">
+                            <select id="discountType" class="form-select form-select-sm">
                                 <option value="fixed">{{ __('messages.currency') }}</option>
                                 <option value="percentage">%</option>
                             </select>
@@ -357,24 +486,48 @@
                 {{-- Cart Actions --}}
                 <div class="cart-actions">
                     {{-- Payment Method --}}
-                    <div class="mb-3">
-                        <div class="btn-group w-100" role="group">
+                    <div class="mb-2">
+                        <label class="form-label small text-muted mb-1">{{ __('messages.payment_method') }}</label>
+                        <div class="payment-methods-grid" role="group">
                             <input type="radio" class="btn-check" name="paymentMethod" id="payCash" value="cash" checked>
-                            <label class="btn btn-outline-success" for="payCash">
+                            <label class="btn btn-sm btn-outline-success text-white" for="payCash">
                                 <i class="ti ti-cash me-1"></i>
                                 {{ __('messages.cash') }}
                             </label>
                             <input type="radio" class="btn-check" name="paymentMethod" id="payCredit" value="credit">
-                            <label class="btn btn-outline-warning" for="payCredit">
+                            <label class="btn btn-sm btn-outline-warning" for="payCredit">
                                 <i class="ti ti-calendar-due me-1"></i>
                                 {{ __('messages.credit') }}
                             </label>
                         </div>
                     </div>
 
-                    {{-- Cashbox Selection (for cash) --}}
-                    <div id="cashboxSection" class="mb-3">
-                        <select id="cashboxSelect" class="form-select">
+                    {{-- Payment Type (for cash only: cash or bank_transfer) --}}
+                    <div id="paymentTypeSection" class="mb-2">
+                        <label class="form-label small text-muted mb-1">{{ __('messages.payment_type') }}</label>
+                        <div class="payment-methods-grid" role="group">
+                            <input type="radio" class="btn-check" name="paymentType" id="typeCash" value="cash" checked>
+                            <label class="btn btn-sm btn-outline-primary text-white" for="typeCash">
+                                <i class="ti ti-cash me-1"></i>
+                                {{ __('messages.cash') }}
+                            </label>
+                            <input type="radio" class="btn-check" name="paymentType" id="typeBankTransfer" value="bank_transfer">
+                            <label class="btn btn-sm btn-outline-info" for="typeBankTransfer">
+                                <i class="ti ti-building-bank me-1"></i>
+                                {{ __('messages.bank_transfer') }}
+                            </label>
+                        </div>
+                    </div>
+
+                    {{-- Bank Account (for bank_transfer only) --}}
+                    <div id="bankAccountSection" class="mb-2" style="display: none;">
+                        <label class="form-label small text-muted mb-1">{{ __('messages.bank_account_number') }}</label>
+                        <input type="text" id="bankAccount" class="form-control form-control-sm" placeholder="{{ __('messages.enter_bank_account') }}">
+                    </div>
+
+                    {{-- Cashbox Selection (for cash payment only) --}}
+                    <div id="cashboxSection" class="mb-2">
+                        <select id="cashboxSelect" class="form-select form-select-sm">
                             @foreach($cashboxes as $cashbox)
                                 <option value="{{ $cashbox->id }}">{{ $cashbox->name }}</option>
                             @endforeach
@@ -382,16 +535,16 @@
                     </div>
 
                     {{-- Paid Amount (optional) --}}
-                    <div class="mb-3" id="paidAmountSection">
-                        <label class="form-label small text-muted">{{ __('messages.paid_amount') }}</label>
-                        <div class="input-group">
+                    <div class="mb-2" id="paidAmountSection">
+                        <label class="form-label small text-muted mb-1">{{ __('messages.paid_amount') }}</label>
+                        <div class="input-group input-group-sm">
                             <input type="number" id="paidAmount" class="form-control" min="0" step="0.01">
                             <span class="input-group-text">{{ __('messages.currency') }}</span>
                         </div>
                     </div>
 
                     {{-- Pay Button --}}
-                    <button type="button" class="btn btn-pay btn-lg w-100 text-white" id="payBtn" disabled>
+                    <button type="button" class="btn btn-pay w-100 text-white" id="payBtn" disabled>
                         <i class="ti ti-check me-2"></i>
                         {{ __('messages.complete_sale') }}
                     </button>
@@ -1073,14 +1226,18 @@ document.addEventListener('DOMContentLoaded', function() {
         loadProducts();
     });
 
-    document.getElementById('clearCart').addEventListener('click', function() {
-        if (cart.length > 0 && confirm('{{ __("messages.confirm_clear_cart") }}')) {
-            cart = [];
-            removeCoupon();
-            renderCart();
-        }
-        focusSearch();
-    });
+    // Clear cart button (optional)
+    const clearCartBtn = document.getElementById('clearCart');
+    if (clearCartBtn) {
+        clearCartBtn.addEventListener('click', function() {
+            if (cart.length > 0 && confirm('{{ __("messages.confirm_clear_cart") }}')) {
+                cart = [];
+                removeCoupon();
+                renderCart();
+            }
+            focusSearch();
+        });
+    }
 
     // Check if customer is default (walk-in) and handle credit restriction
     function updatePaymentMethodVisibility() {
@@ -1117,10 +1274,34 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial check
     updatePaymentMethodVisibility();
 
-    // Payment method toggle
+    // Payment method toggle (cash or credit)
     document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
         radio.addEventListener('change', function() {
-            document.getElementById('cashboxSection').style.display = this.value === 'cash' ? 'block' : 'none';
+            const paymentTypeSection = document.getElementById('paymentTypeSection');
+            const cashboxSection = document.getElementById('cashboxSection');
+            const bankAccountSection = document.getElementById('bankAccountSection');
+
+            if (this.value === 'cash') {
+                // Show payment type selection (cash or bank transfer)
+                paymentTypeSection.style.display = 'block';
+                cashboxSection.style.display = 'block';
+                // Reset bank account visibility based on payment type
+                const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
+                bankAccountSection.style.display = paymentType === 'bank_transfer' ? 'block' : 'none';
+            } else {
+                // Credit - hide payment type and cashbox
+                paymentTypeSection.style.display = 'none';
+                cashboxSection.style.display = 'none';
+                bankAccountSection.style.display = 'none';
+            }
+        });
+    });
+
+    // Payment type toggle (cash or bank_transfer) - only shown when payment method is cash
+    document.querySelectorAll('input[name="paymentType"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const bankAccountSection = document.getElementById('bankAccountSection');
+            bankAccountSection.style.display = this.value === 'bank_transfer' ? 'block' : 'none';
         });
     });
 
@@ -1129,11 +1310,19 @@ document.addEventListener('DOMContentLoaded', function() {
         if (cart.length === 0) return;
 
         const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+        const paymentType = paymentMethod === 'cash' ? document.querySelector('input[name="paymentType"]:checked').value : null;
+        const bankAccount = paymentType === 'bank_transfer' ? document.getElementById('bankAccount').value : null;
         const customerId = document.getElementById('customerSelect').value;
         const cashboxId = document.getElementById('cashboxSelect').value;
         const discount = parseFloat(document.getElementById('discountInput').value) || 0;
         const discountType = document.getElementById('discountType').value;
         const paidAmount = parseFloat(document.getElementById('paidAmount').value) || 0;
+
+        // Validate bank account if payment type is bank_transfer
+        if (paymentType === 'bank_transfer' && !bankAccount) {
+            alert('{{ __("messages.please_enter_bank_account") }}');
+            return;
+        }
 
         payBtn.disabled = true;
         payBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>{{ __("messages.processing") }}...';
@@ -1150,6 +1339,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     customer_id: customerId,
                     cashbox_id: paymentMethod === 'cash' ? cashboxId : null,
                     payment_method: paymentMethod,
+                    payment_type: paymentType,
+                    bank_account: bankAccount,
                     discount: discount,
                     discount_type: discountType,
                     paid_amount: paidAmount,
@@ -1190,14 +1381,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Print receipt (80mm)
     document.getElementById('printReceiptBtn').addEventListener('click', function() {
         if (currentSaleId) {
-            window.open(`/public/pos/${currentSaleId}/receipt`, '_blank');
+            window.open(`/pos/${currentSaleId}/receipt`, '_blank');
         }
     });
 
     // Print A4 invoice
     document.getElementById('printInvoiceA4Btn').addEventListener('click', function() {
         if (currentSaleId) {
-            window.open(`/public/pos/${currentSaleId}/invoice`, '_blank');
+            window.open(`/pos/${currentSaleId}/invoice`, '_blank');
         }
     });
 

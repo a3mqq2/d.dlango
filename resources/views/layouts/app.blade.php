@@ -27,6 +27,22 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
+{{-- [PWA Meta Tags] --}}
+<meta name="theme-color" content="#b65f7a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hulul POS">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="{{ asset('manifest.json') }}">
+<link rel="apple-touch-icon" sizes="72x72" href="{{ asset('images/icon-72x72.png') }}">
+<link rel="apple-touch-icon" sizes="96x96" href="{{ asset('images/icon-96x96.png') }}">
+<link rel="apple-touch-icon" sizes="128x128" href="{{ asset('images/icon-128x128.png') }}">
+<link rel="apple-touch-icon" sizes="144x144" href="{{ asset('images/icon-144x144.png') }}">
+<link rel="apple-touch-icon" sizes="152x152" href="{{ asset('images/icon-152x152.png') }}">
+<link rel="apple-touch-icon" sizes="192x192" href="{{ asset('images/icon-192x192.png') }}">
+<link rel="apple-touch-icon" sizes="384x384" href="{{ asset('images/icon-384x384.png') }}">
+<link rel="apple-touch-icon" sizes="512x512" href="{{ asset('images/icon-512x512.png') }}">
+
 {{-- [Flatpickr CSS] --}}
 <link rel="stylesheet" href="{{ asset('assets/vendor/flatpickr/flatpickr.min.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/vendor/flatpickr/dark.css') }}">
@@ -37,8 +53,10 @@
 {{-- [Favicon] --}}
 <link rel="icon" href="{{ asset('assets/images/favicon.svg') }}" type="image/x-icon" />
 
-{{-- [Font] Family - Changa (Local) --}}
-<link rel="stylesheet" href="{{ asset('assets/fonts/changa/changa.css') }}">
+{{-- [Font] Family - Changa from Google Fonts --}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Changa:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('assets/fonts/inter/inter.css') }}" id="main-font-link" />
 {{-- [phosphor Icons] https://phosphoricons.com/ --}}
 <link rel="stylesheet" href="{{ asset('assets/fonts/phosphor/duotone/style.css') }}" />
@@ -542,6 +560,15 @@ $(document).ready(function() {
 </script>
 
 @stack('scripts')
+
+{{-- PWA Scripts --}}
+<script src="{{ asset('js/pwa.js') }}" defer></script>
+
+{{-- PWA Install Button --}}
+<button id="pwa-install-btn" class="btn btn-primary btn-lg">
+    <i class="ti ti-download"></i>
+    <span>{{ __('messages.install_app') }}</span>
+</button>
 
 {{-- Logout Form --}}
 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

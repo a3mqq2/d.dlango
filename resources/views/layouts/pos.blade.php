@@ -1,4 +1,3 @@
-{{-- resources/views/layouts/pos.blade.php - Full Screen POS Layout --}}
 <!doctype html>
 <html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
@@ -7,6 +6,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="csrf-token" content="{{ csrf_token() }}">
+
+{{-- PWA Meta Tags --}}
+<meta name="theme-color" content="#b65f7a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hulul POS">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="{{ asset('manifest.json') }}">
+<link rel="apple-touch-icon" href="{{ asset('images/icon-192x192.png') }}">
 
 {{-- Favicon --}}
 <link rel="icon" href="{{ asset('assets/images/favicon.svg') }}" type="image/x-icon" />
@@ -278,6 +286,9 @@ document.addEventListener('fullscreenchange', function() {
 </script>
 
 @stack('scripts')
+
+{{-- PWA Scripts --}}
+<script src="{{ asset('js/pwa.js') }}" defer></script>
 
 </body>
 </html>

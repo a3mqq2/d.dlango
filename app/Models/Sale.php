@@ -22,6 +22,8 @@ class Sale extends Model
         'paid_amount',
         'remaining_amount',
         'payment_method',
+        'payment_type',
+        'bank_account',
         'status',
         'notes',
         'coupon_id',

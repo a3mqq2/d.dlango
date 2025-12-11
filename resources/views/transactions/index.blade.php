@@ -105,8 +105,13 @@
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <i class="ti ti-cash text-primary me-2"></i>
-                                            <span>{{ $transaction->cashbox->name }}</span>
+                                            @if($transaction->cashbox)
+                                                <i class="ti ti-cash text-primary me-2"></i>
+                                                <span>{{ $transaction->cashbox->name }}</span>
+                                            @else
+                                                <i class="ti ti-calendar-due text-warning me-2"></i>
+                                                <span class="text-muted">{{ __('messages.credit_transaction') }}</span>
+                                            @endif
                                         </div>
                                     </td>
                                     <td>
@@ -140,12 +145,12 @@
                                                title="{{ __('messages.view') }}">
                                                 <i class="ti ti-eye"></i>
                                             </a>
-                                            <a href="{{ route('transactions.receipt', $transaction) }}"
+                                            {{-- <a href="{{ route('transactions.receipt', $transaction) }}"
                                                class="btn btn-sm btn-outline-secondary"
                                                title="{{ __('messages.print_receipt') }}"
                                                target="_blank">
                                                 <i class="ti ti-printer"></i>
-                                            </a>
+                                            </a> --}}
                                             <a href="{{ route('transactions.edit', $transaction) }}"
                                                class="btn btn-sm btn-outline-primary"
                                                title="{{ __('messages.edit') }}">

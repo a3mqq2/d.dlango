@@ -65,7 +65,7 @@ class PurchaseInvoiceController extends Controller
             'products.*.code' => ['required', 'string', 'size:4'],
             'products.*.name' => ['required', 'string'],
             'products.*.sku' => ['nullable', 'string'],
-            'products.*.image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'products.*.image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp'],
             'products.*.quantity' => ['required_if:products.*.type,simple', 'nullable', 'integer', 'min:1'],
             'products.*.purchase_price' => ['required_if:products.*.type,simple', 'nullable', 'numeric', 'min:0'],
             'products.*.selling_price' => ['required_if:products.*.type,simple', 'nullable', 'numeric', 'min:0'],
@@ -108,18 +108,34 @@ class PurchaseInvoiceController extends Controller
                 }
 
                 if ($productData['type'] === 'simple') {
-                    // Simple product
-                    $product = Product::create([
-                        'code' => $productData['code'],
-                        'name' => $productData['name'],
-                        'sku' => $productData['sku'] ?? null,
-                        'type' => 'simple',
-                        'quantity' => 0, // Will be added on receive
-                        'purchase_price' => $productData['purchase_price'],
-                        'selling_price' => $productData['selling_price'],
-                        'profit_per_unit' => $productData['selling_price'] - $productData['purchase_price'],
-                        'image' => $imagePath,
-                    ]);
+                    // Simple product - check if SKU exists
+                    $product = null;
+                    if (!empty($productData['sku'])) {
+                        $product = Product::where('sku', $productData['sku'])->first();
+                    }
+
+                    if ($product) {
+                        // Update existing product prices and image if provided
+                        $product->update([
+                            'purchase_price' => $productData['purchase_price'],
+                            'selling_price' => $productData['selling_price'],
+                            'profit_per_unit' => $productData['selling_price'] - $productData['purchase_price'],
+                            'image' => $imagePath ?? $product->image,
+                        ]);
+                    } else {
+                        // Create new product
+                        $product = Product::create([
+                            'code' => $productData['code'],
+                            'name' => $productData['name'],
+                            'sku' => $productData['sku'] ?? null,
+                            'type' => 'simple',
+                            'quantity' => 0, // Will be added on receive
+                            'purchase_price' => $productData['purchase_price'],
+                            'selling_price' => $productData['selling_price'],
+                            'profit_per_unit' => $productData['selling_price'] - $productData['purchase_price'],
+                            'image' => $imagePath,
+                        ]);
+                    }
 
                     $profitPerUnit = $productData['selling_price'] - $productData['purchase_price'];
                     $itemTotalProfit = $profitPerUnit * $productData['quantity'];
@@ -213,13 +229,11 @@ class PurchaseInvoiceController extends Controller
                 ]);
             } else {
                 // Credit payment - affects supplier balance (we owe supplier)
+                // No cashbox needed for credit purchases - only affects supplier balance
                 $creditCategory = TransactionCategory::getSystemCategory(__('messages.credit_purchase'));
 
-                // Use default cashbox for tracking credit transactions
-                $defaultCashbox = Cashbox::first();
-
                 Transaction::create([
-                    'cashbox_id' => $defaultCashbox->id,
+                    'cashbox_id' => null, // No cashbox for credit purchases
                     'supplier_id' => $supplier->id, // Linked to supplier - credit affects balance
                     'transaction_category_id' => $creditCategory->id,
                     'recipient_name' => $supplier->name,
@@ -321,10 +335,10 @@ class PurchaseInvoiceController extends Controller
                 ]);
             } else {
                 // Create deposit transaction to reverse the credit (cancel the debt)
-                $defaultCashbox = Cashbox::first();
+                // No cashbox needed for credit cancellations - only affects supplier balance
 
                 Transaction::create([
-                    'cashbox_id' => $defaultCashbox->id,
+                    'cashbox_id' => null, // No cashbox for credit cancellations
                     'supplier_id' => $supplier->id, // Linked to supplier - affects balance
                     'transaction_category_id' => $cancelCategory->id,
                     'recipient_name' => $supplier->name,

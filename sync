@@ -1,0 +1,38 @@
+@echo off
+echo Starting update process...
+echo ----------------------------
+
+echo Pulling latest code...
+git pull origin main
+if %errorlevel% neq 0 (
+    echo Git pull failed.
+    exit /b 1
+)
+echo Git pull completed.
+
+echo Installing composer packages...
+composer install --no-dev
+if %errorlevel% neq 0 (
+    echo Composer install failed.
+    exit /b 1
+)
+echo Composer install completed.
+
+echo Running migrations...
+php artisan migrate --force
+if %errorlevel% neq 0 (
+    echo Migration failed.
+    exit /b 1
+)
+echo Migrations completed.
+
+echo Optimizing application...
+php artisan optimize:clear
+if %errorlevel% neq 0 (
+    echo Optimization failed.
+    exit /b 1
+)
+echo Optimization completed.
+
+echo ----------------------------
+echo Update process finished successfully.

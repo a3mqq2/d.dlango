@@ -15,69 +15,59 @@
             direction: {{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }};
         }
 
-        /* صفحة 150mm عرض × 100mm ارتفاع (landscape) */
-        /* شبكة 3 أعمدة × 3 صفوف = 9 ملصقات */
-        .print-page {
+        /* ملصق واحد في كل صفحة 150mm عرض × 100mm ارتفاع */
+        .label {
             width: 150mm;
             height: 100mm;
-            padding: 2mm;
-            display: flex;
-            flex-wrap: wrap;
-            align-content: flex-start;
-            justify-content: space-around;
-            page-break-after: always;
-        }
-        .print-page:last-child {
-            page-break-after: auto;
-        }
-
-        .label {
-            width: 48mm;
-            height: 31mm;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 2mm;
+            padding: 5mm;
+            page-break-after: always;
             overflow: hidden;
+        }
+        .label:last-child {
+            page-break-after: auto;
         }
 
         .label .product-name {
-            font-size: 9px;
+            font-size: 18px;
             font-weight: bold;
             text-align: center;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
             width: 100%;
-            margin-bottom: 1mm;
+            margin-bottom: 5mm;
         }
 
         .label .barcode {
-            width: 44mm;
-            height: 16mm;
+            width: 120mm;
+            height: 50mm;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .label .barcode svg {
-            width: 44mm;
-            height: 16mm;
+            width: 120mm;
+            height: 50mm;
         }
 
         .label .product-code {
-            font-size: 9px;
+            font-size: 20px;
             text-align: center;
             font-family: monospace;
             font-weight: bold;
-            margin-top: 1mm;
+            margin-top: 3mm;
         }
 
         .label .product-price {
-            font-size: 10px;
+            font-size: 24px;
             text-align: center;
             font-weight: bold;
+            margin-top: 2mm;
         }
 
         .no-print {
@@ -110,19 +100,13 @@
                 size: 150mm 100mm landscape;
                 margin: 0;
             }
-            .label {
-                border: none;
-            }
         }
 
         @media screen {
-            .print-page {
+            .label {
                 border: 1px solid #000;
                 margin: 10px auto;
                 background: white;
-            }
-            .label {
-                border: 1px dashed #ccc;
             }
         }
     </style>
@@ -137,36 +121,27 @@
     <div class="summary">
         {{ __('messages.total_barcodes') }}: <strong>{{ count($barcodes) }}</strong>
         &nbsp;|&nbsp;
-        {{ __('messages.label_size') }}: <strong>150mm × 100mm (landscape) - 9 labels per page</strong>
+        {{ __('messages.label_size') }}: <strong>150mm × 100mm (landscape) - 1 label per page</strong>
     </div>
 
-    @php
-        $labelsPerPage = 9; // 3 columns × 3 rows
-        $totalPages = ceil(count($barcodes) / $labelsPerPage);
-    @endphp
-
-    @for($page = 0; $page < $totalPages; $page++)
-    <div class="print-page">
-        @for($i = $page * $labelsPerPage; $i < min(($page + 1) * $labelsPerPage, count($barcodes)); $i++)
-        <div class="label">
-            <div class="product-name">{{ $barcodes[$i]['name'] }}</div>
-            <div class="barcode">
-                <svg id="barcode-{{ $i }}"></svg>
-            </div>
-            <div class="product-code">{{ $barcodes[$i]['code'] }}</div>
-            <div class="product-price">{{ number_format($barcodes[$i]['price'], 2) }} {{ __('messages.currency') }}</div>
+    @foreach($barcodes as $index => $item)
+    <div class="label">
+        <div class="product-name">{{ $item['name'] }}</div>
+        <div class="barcode">
+            <svg id="barcode-{{ $index }}"></svg>
         </div>
-        @endfor
+        <div class="product-code">{{ $item['code'] }}</div>
+        <div class="product-price">{{ number_format($item['price'], 2) }} {{ __('messages.currency') }}</div>
     </div>
-    @endfor
+    @endforeach
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            @foreach($barcodes as $i => $item)
-            JsBarcode("#barcode-{{ $i }}", "{{ $item['code'] }}", {
+            @foreach($barcodes as $index => $item)
+            JsBarcode("#barcode-{{ $index }}", "{{ $item['code'] }}", {
                 format: "CODE128",
-                width: 1.8,
-                height: 40,
+                width: 3,
+                height: 100,
                 displayValue: false,
                 margin: 0
             });

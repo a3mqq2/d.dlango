@@ -6,83 +6,106 @@
     <title>{{ __('messages.print_barcode') }} - {{ $item['name'] }}</title>
     <style>
         * {
-            margin: 0;
-            padding: 0;
+            margin: 0 !important;
+            padding: 0 !important;
             box-sizing: border-box;
         }
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             direction: {{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }};
         }
-        .barcode-container {
-            display: flex;
-            flex-wrap: wrap;
-            padding: 10px;
-            gap: 10px;
-        }
         .barcode-item {
-            width: 80mm;
-            height: 50mm;
-            border: 1px dashed #ccc;
-            padding: 3mm;
+            width: 38mm;
+            height: 25mm;
+            padding: 1mm !important;
             text-align: center;
-            page-break-inside: avoid;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            page-break-after: always;
+            overflow: hidden;
+        }
+        .barcode-item:last-child {
+            page-break-after: auto;
         }
         .barcode-item .product-name {
-            font-size: 12px;
+            font-size: 6px;
             font-weight: bold;
-            margin-bottom: 2mm;
+            line-height: 1;
             overflow: hidden;
-            line-height: 1.2;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         .barcode-item .barcode {
-            margin: 2mm 0;
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         .barcode-item .barcode svg {
-            width: 70mm;
-            height: 20mm;
+            width: 34mm;
+            height: 12mm;
         }
         .barcode-item .product-code {
-            font-size: 14px;
+            font-size: 6px;
             font-weight: bold;
             font-family: monospace;
-            margin: 5px 0;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         .barcode-item .product-price {
-            font-size: 14px;
+            font-size: 7px;
             font-weight: bold;
-            color: #28a745;
+            color: #000;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         .no-print {
             text-align: center;
-            padding: 20px;
+            padding: 20px !important;
+        }
+        .barcode-container {
+            padding: 0 !important;
+            margin: 0 !important;
         }
         @media print {
-            .no-print { display: none; }
-            body {
-                margin: 0;
-                padding: 0;
+            .no-print { display: none !important; }
+            html, body {
+                width: 38mm !important;
+                height: 25mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
             .barcode-container {
-                padding: 0;
-                gap: 0;
+                padding: 0 !important;
+                margin: 0 !important;
             }
             .barcode-item {
-                width: 80mm;
-                height: 50mm;
-                border: 1px solid #000;
-                margin: 0;
+                width: 38mm !important;
+                height: 25mm !important;
+                margin: 0 !important;
+                padding: 1mm !important;
+                border: none !important;
             }
             @page {
-                size: 80mm 50mm landscape;
-                margin: 0;
+                size: 38mm 25mm;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+        }
+        @media screen {
+            .barcode-item {
+                border: 1px dashed #ccc;
+                margin: 5px auto !important;
+                background: white;
             }
         }
     </style>
@@ -93,6 +116,7 @@
         <button onclick="window.print()" style="padding: 10px 30px; font-size: 16px; cursor: pointer; margin-bottom: 20px;">
             {{ __('messages.print') }}
         </button>
+        <p style="margin-top: 10px; color: #666;">{{ __('messages.label_size') }}: 38mm x 25mm</p>
     </div>
 
     <div class="barcode-container">
@@ -113,14 +137,13 @@
             @for($i = 0; $i < $quantity; $i++)
                 JsBarcode("#barcode-{{ $i }}", "{{ $item['code'] }}", {
                     format: "CODE128",
-                    width: 2,
-                    height: 50,
+                    width: 1,
+                    height: 30,
                     displayValue: false,
                     margin: 0
                 });
             @endfor
 
-            // Auto print
             setTimeout(function() {
                 window.print();
             }, 500);

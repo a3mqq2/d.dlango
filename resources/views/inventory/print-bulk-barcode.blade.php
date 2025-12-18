@@ -19,8 +19,9 @@ body {
     width: 38mm;
     height: 25mm;
     position: relative;
-    page-break-after: always;
+    margin-top: 3mm;
 }
+
 
 .name {
     position: absolute;

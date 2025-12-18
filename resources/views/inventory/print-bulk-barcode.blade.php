@@ -87,7 +87,7 @@
         @media print {
             .no-print, .summary { display: none; }
             @page {
-                size: 80mm 50mm;
+                size: 80mm 50mm landscape;
                 margin: 0;
             }
             .barcode-page {

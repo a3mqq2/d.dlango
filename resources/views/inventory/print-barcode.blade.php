@@ -81,7 +81,7 @@
                 margin: 0;
             }
             @page {
-                size: 80mm 50mm;
+                size: 80mm 50mm landscape;
                 margin: 0;
             }
         }

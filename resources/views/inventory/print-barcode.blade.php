@@ -21,26 +21,33 @@
             gap: 10px;
         }
         .barcode-item {
-            width: 200px;
+            width: 80mm;
+            height: 50mm;
             border: 1px dashed #ccc;
-            padding: 10px;
+            padding: 3mm;
             text-align: center;
             page-break-inside: avoid;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
         .barcode-item .product-name {
-            font-size: 11px;
+            font-size: 12px;
             font-weight: bold;
-            margin-bottom: 5px;
-            height: 30px;
+            margin-bottom: 2mm;
             overflow: hidden;
             line-height: 1.2;
         }
         .barcode-item .barcode {
-            margin: 5px 0;
+            margin: 2mm 0;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .barcode-item .barcode svg {
-            width: 100%;
-            height: 50px;
+            width: 70mm;
+            height: 20mm;
         }
         .barcode-item .product-code {
             font-size: 14px;
@@ -59,11 +66,23 @@
         }
         @media print {
             .no-print { display: none; }
-            .barcode-container {
+            body {
+                margin: 0;
                 padding: 0;
             }
+            .barcode-container {
+                padding: 0;
+                gap: 0;
+            }
             .barcode-item {
+                width: 80mm;
+                height: 50mm;
                 border: 1px solid #000;
+                margin: 0;
+            }
+            @page {
+                size: 80mm 50mm;
+                margin: 0;
             }
         }
     </style>

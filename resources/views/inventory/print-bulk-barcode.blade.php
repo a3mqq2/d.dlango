@@ -49,8 +49,8 @@
         }
 
         .label .barcode svg {
-            width: 45mm;
-            height: 15mm;
+            width: 140mm;
+            height: 90mm;
         }
 
         .label .product-code {

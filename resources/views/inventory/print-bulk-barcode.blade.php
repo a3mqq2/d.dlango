@@ -170,7 +170,7 @@
 
     <script>
 function printBarcodes() {
-    fetch('/inventory/print-barcodes-raw', {
+    fetch('/dlango/public/inventory/print-barcodes-raw', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

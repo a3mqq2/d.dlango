@@ -127,7 +127,7 @@
 </div>
 
 @foreach($barcodes as $index => $item)
-    <div class="barcode-page">
+    <div class="barcode-page" style="margin-top: 30px;">
         <div class="product-name">{{ $item['name'] }}</div>
         <div class="barcode">
             <svg id="barcode-{{ $index }}"></svg>

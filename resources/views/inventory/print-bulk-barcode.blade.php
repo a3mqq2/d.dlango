@@ -14,14 +14,15 @@
             font-family: Arial, sans-serif;
         }
 
-        /* ملصق بالعرض: 50mm عرض × 30mm ارتفاع */
+        /* ملصق 150mm عرض × 100mm ارتفاع */
         .label {
             width: 150mm;
             height: 100mm;
-            padding: 2mm;
+            padding: 5mm;
+            padding-right: 10mm;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             page-break-after: always;
             overflow: hidden;
@@ -31,39 +32,42 @@
         }
 
         .label .product-name {
-            font-size: 10px;
+            font-size: 24px;
             font-weight: bold;
             text-align: center;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
             width: 100%;
+            margin-bottom: 8mm;
         }
 
         .label .barcode {
             width: 130mm;
-            height: 90mm;
+            height: 50mm;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .label .barcode svg {
-            width: 140mm;
-            height: 90mm;
+            width: 130mm;
+            height: 50mm;
         }
 
         .label .product-code {
-            font-size: 10px;
+            font-size: 28px;
             text-align: center;
             font-family: monospace;
             font-weight: bold;
+            margin-top: 5mm;
         }
 
         .label .product-price {
-            font-size: 12px;
+            font-size: 32px;
             text-align: center;
             font-weight: bold;
+            margin-top: 3mm;
         }
 
         .no-print {
@@ -93,12 +97,12 @@
         @media print {
             .no-print, .summary { display: none; }
             @page {
-                size: 50mm 30mm;
+                size: 150mm 100mm;
                 margin: 0;
             }
             .label {
-                width: 50mm;
-                height: 30mm;
+                width: 150mm;
+                height: 100mm;
             }
         }
 
@@ -121,7 +125,7 @@
     <div class="summary">
         {{ __('messages.total_barcodes') }}: <strong>{{ count($barcodes) }}</strong>
         &nbsp;|&nbsp;
-        {{ __('messages.label_size') }}: <strong>50mm × 30mm</strong>
+        {{ __('messages.label_size') }}: <strong>150mm × 100mm</strong>
     </div>
 
     @foreach($barcodes as $index => $item)
@@ -140,8 +144,8 @@
             @foreach($barcodes as $index => $item)
             JsBarcode("#barcode-{{ $index }}", "{{ $item['code'] }}", {
                 format: "CODE128",
-                width: 2,
-                height: 50,
+                width: 3.5,
+                height: 120,
                 displayValue: false,
                 margin: 0
             });

@@ -12,18 +12,17 @@
         }
         body {
             font-family: Arial, sans-serif;
-            direction: {{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }};
         }
 
-        /* ملصق واحد في كل صفحة 150mm عرض × 100mm ارتفاع */
+        /* ملصق بالعرض: 50mm عرض × 30mm ارتفاع */
         .label {
-            width: 150mm;
-            height: 100mm;
+            width: 50mm;
+            height: 30mm;
+            padding: 2mm;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            padding: 5mm;
             page-break-after: always;
             overflow: hidden;
         }
@@ -32,42 +31,39 @@
         }
 
         .label .product-name {
-            font-size: 18px;
+            font-size: 10px;
             font-weight: bold;
             text-align: center;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
             width: 100%;
-            margin-bottom: 5mm;
         }
 
         .label .barcode {
-            width: 120mm;
-            height: 50mm;
+            width: 45mm;
+            height: 15mm;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .label .barcode svg {
-            width: 120mm;
-            height: 50mm;
+            width: 45mm;
+            height: 15mm;
         }
 
         .label .product-code {
-            font-size: 20px;
+            font-size: 10px;
             text-align: center;
             font-family: monospace;
             font-weight: bold;
-            margin-top: 3mm;
         }
 
         .label .product-price {
-            font-size: 24px;
+            font-size: 12px;
             text-align: center;
             font-weight: bold;
-            margin-top: 2mm;
         }
 
         .no-print {
@@ -97,8 +93,12 @@
         @media print {
             .no-print, .summary { display: none; }
             @page {
-                size: 150mm 100mm landscape;
+                size: 50mm 30mm;
                 margin: 0;
+            }
+            .label {
+                width: 50mm;
+                height: 30mm;
             }
         }
 
@@ -121,7 +121,7 @@
     <div class="summary">
         {{ __('messages.total_barcodes') }}: <strong>{{ count($barcodes) }}</strong>
         &nbsp;|&nbsp;
-        {{ __('messages.label_size') }}: <strong>150mm × 100mm (landscape) - 1 label per page</strong>
+        {{ __('messages.label_size') }}: <strong>50mm × 30mm</strong>
     </div>
 
     @foreach($barcodes as $index => $item)
@@ -140,8 +140,8 @@
             @foreach($barcodes as $index => $item)
             JsBarcode("#barcode-{{ $index }}", "{{ $item['code'] }}", {
                 format: "CODE128",
-                width: 3,
-                height: 100,
+                width: 2,
+                height: 50,
                 displayValue: false,
                 margin: 0
             });

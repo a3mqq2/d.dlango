@@ -17,11 +17,12 @@
         .barcode-page {
             width: 38mm;
             height: 25mm;
-            padding: 1mm;
+            padding: 0.5mm;
             text-align: center;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
+            align-items: center;
             page-break-after: always;
             margin: 0 auto;
             overflow: hidden;
@@ -30,30 +31,33 @@
             page-break-after: auto;
         }
         .barcode-page .product-name {
-            font-size: 7px;
+            font-size: 9px;
             font-weight: bold;
             line-height: 1;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            width: 100%;
+            margin-bottom: 1mm;
         }
         .barcode-page .barcode {
-            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 100%;
         }
         .barcode-page .barcode svg {
-            width: 35mm;
-            height: 14mm;
+            width: 36mm;
+            height: 16mm;
         }
         .barcode-page .product-code {
-            font-size: 7px;
+            font-size: 10px;
             font-weight: bold;
             font-family: monospace;
+            margin-top: 0.5mm;
         }
         .barcode-page .product-price {
-            font-size: 8px;
+            font-size: 11px;
             font-weight: bold;
             color: #000;
         }
@@ -138,8 +142,8 @@
             @foreach($barcodes as $index => $item)
                 JsBarcode("#barcode-{{ $index }}", "{{ $item['code'] }}", {
                     format: "CODE128",
-                    width: 1.2,
-                    height: 35,
+                    width: 2,
+                    height: 50,
                     displayValue: false,
                     margin: 0
                 });

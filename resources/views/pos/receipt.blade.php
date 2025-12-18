@@ -106,11 +106,25 @@
         .barcode svg {
             max-width: 100%;
         }
+        .header img {
+            display: block;
+            margin: 0 auto 10px auto;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
         @media print {
             body {
                 width: 80mm;
                 margin: 0;
                 padding: 5px;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .header img {
+                display: block !important;
+                visibility: visible !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
             @page {
                 size: 80mm auto;
@@ -123,7 +137,17 @@
     <div class="receipt">
         {{-- Header --}}
         <div class="header">
-            <img src="{{asset('logo.png')}}" width="200" alt="">
+            @php
+                $logoPath = public_path('logo.png');
+                $logoBase64 = '';
+                if (file_exists($logoPath)) {
+                    $logoData = file_get_contents($logoPath);
+                    $logoBase64 = 'data:image/png;base64,' . base64_encode($logoData);
+                }
+            @endphp
+            @if($logoBase64)
+                <img src="{{ $logoBase64 }}" width="200" alt="Logo" style="max-width: 60mm; height: auto;">
+            @endif
             <p>{{ __('messages.sales_receipt') }}</p>
         </div>
 

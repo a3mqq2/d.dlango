@@ -21,7 +21,7 @@
         .barcode-item {
             width: 38mm;
             height: 25mm;
-            padding: 1mm !important;
+            padding: 0.5mm !important;
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -33,7 +33,7 @@
             page-break-after: auto;
         }
         .barcode-item .product-name {
-            font-size: 6px;
+            font-size: 8px;
             font-weight: bold;
             line-height: 1;
             overflow: hidden;
@@ -51,18 +51,18 @@
             padding: 0 !important;
         }
         .barcode-item .barcode svg {
-            width: 34mm;
-            height: 12mm;
+            width: 36mm;
+            height: 15mm;
         }
         .barcode-item .product-code {
-            font-size: 6px;
+            font-size: 8px;
             font-weight: bold;
             font-family: monospace;
             margin: 0 !important;
             padding: 0 !important;
         }
         .barcode-item .product-price {
-            font-size: 7px;
+            font-size: 9px;
             font-weight: bold;
             color: #000;
             margin: 0 !important;
@@ -137,8 +137,8 @@
             @for($i = 0; $i < $quantity; $i++)
                 JsBarcode("#barcode-{{ $i }}", "{{ $item['code'] }}", {
                     format: "CODE128",
-                    width: 1,
-                    height: 30,
+                    width: 1.5,
+                    height: 40,
                     displayValue: false,
                     margin: 0
                 });

@@ -11,27 +11,28 @@
             box-sizing: border-box;
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             direction: {{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }};
         }
         .barcode-page {
-            width: 80mm;
-            height: 50mm;
-            padding: 3mm;
+            width: 38mm;
+            height: 25mm;
+            padding: 1mm;
             text-align: center;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             page-break-after: always;
             margin: 0 auto;
+            overflow: hidden;
         }
         .barcode-page:last-child {
             page-break-after: auto;
         }
         .barcode-page .product-name {
-            font-size: 12px;
+            font-size: 7px;
             font-weight: bold;
-            line-height: 1.2;
+            line-height: 1;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -43,16 +44,16 @@
             justify-content: center;
         }
         .barcode-page .barcode svg {
-            width: 70mm;
-            height: 20mm;
+            width: 35mm;
+            height: 14mm;
         }
         .barcode-page .product-code {
-            font-size: 10px;
+            font-size: 7px;
             font-weight: bold;
             font-family: monospace;
         }
         .barcode-page .product-price {
-            font-size: 11px;
+            font-size: 8px;
             font-weight: bold;
             color: #000;
         }
@@ -87,15 +88,14 @@
         @media print {
             .no-print, .summary { display: none; }
             @page {
-                size: 80mm 50mm landscape;
+                size: 38mm 25mm;
                 margin: 0;
             }
             .barcode-page {
-                width: 80mm;
-                height: 50mm;
+                width: 38mm;
+                height: 25mm;
             }
         }
-        /* Preview mode - show bordered boxes */
         @media screen {
             .barcode-page {
                 border: 1px dashed #ccc;
@@ -119,7 +119,7 @@
     <div class="summary">
         {{ __('messages.total_barcodes') }}: <strong>{{ count($barcodes) }}</strong>
         &nbsp;|&nbsp;
-        {{ __('messages.label_size') }}: <strong>80mm x 50mm</strong>
+        {{ __('messages.label_size') }}: <strong>38mm x 25mm</strong>
     </div>
 
     @foreach($barcodes as $index => $item)
@@ -138,7 +138,7 @@
             @foreach($barcodes as $index => $item)
                 JsBarcode("#barcode-{{ $index }}", "{{ $item['code'] }}", {
                     format: "CODE128",
-                    width: 1.5,
+                    width: 1.2,
                     height: 35,
                     displayValue: false,
                     margin: 0

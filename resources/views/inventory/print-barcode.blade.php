@@ -96,7 +96,7 @@
                 border: none !important;
             }
             @page {
-                size: 25mm 38mm;
+                size: 38mm 25mm;
                 margin: 0 !important;
                 padding: 0 !important;
             }

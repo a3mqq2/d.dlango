@@ -24,7 +24,7 @@ body {
 
 .name {
     position: absolute;
-    top: 1mm;
+    top: 7mm;
     left: 1mm;
     width: 36mm;
     height: 5mm;

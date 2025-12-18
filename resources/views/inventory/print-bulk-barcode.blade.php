@@ -15,8 +15,8 @@
             direction: {{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }};
         }
         .barcode-page {
-            width: 50mm;
-            height: 30mm;
+            width: 80mm;
+            height: 50mm;
             padding: 3mm;
             text-align: center;
             display: flex;
@@ -29,9 +29,9 @@
             page-break-after: auto;
         }
         .barcode-page .product-name {
-            font-size: 8px;
+            font-size: 12px;
             font-weight: bold;
-            line-height: 1.1;
+            line-height: 1.2;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -43,8 +43,8 @@
             justify-content: center;
         }
         .barcode-page .barcode svg {
-            max-width: 100%;
-            height: auto;
+            width: 70mm;
+            height: 20mm;
         }
         .barcode-page .product-code {
             font-size: 10px;
@@ -87,12 +87,12 @@
         @media print {
             .no-print, .summary { display: none; }
             @page {
-                size: 50mm 30mm;
+                size: 80mm 50mm;
                 margin: 0;
             }
             .barcode-page {
-                width: 50mm;
-                height: 30mm;
+                width: 80mm;
+                height: 50mm;
             }
         }
         /* Preview mode - show bordered boxes */
@@ -119,7 +119,7 @@
     <div class="summary">
         {{ __('messages.total_barcodes') }}: <strong>{{ count($barcodes) }}</strong>
         &nbsp;|&nbsp;
-        {{ __('messages.label_size') }}: <strong>50mm x 30mm</strong>
+        {{ __('messages.label_size') }}: <strong>80mm x 50mm</strong>
     </div>
 
     @foreach($barcodes as $index => $item)

@@ -17,7 +17,7 @@
         .barcode-page {
             width: 38mm;
             height: 25mm;
-            padding: 1mm;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -30,15 +30,17 @@
             page-break-after: auto;
         }
         .product-name {
+            height: 6mm;
             font-size: 7px;
             font-weight: bold;
+            line-height: 1;
             width: 100%;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
         .barcode {
-            flex: 1;
+            height: 11mm;
             width: 100%;
             display: flex;
             align-items: center;
@@ -49,11 +51,13 @@
             height: auto;
         }
         .product-code {
+            height: 4mm;
             font-size: 8px;
             font-family: monospace;
             font-weight: bold;
         }
         .product-price {
+            height: 4mm;
             font-size: 9px;
             font-weight: bold;
         }
@@ -138,8 +142,8 @@ document.addEventListener('DOMContentLoaded', function () {
 @foreach($barcodes as $index => $item)
     JsBarcode("#barcode-{{ $index }}", "{{ $item['code'] }}", {
         format: "CODE128",
-        width: 1,
-        height: 28,
+        width: 0.9,
+        height: 22,
         displayValue: false,
         margin: 0
     });

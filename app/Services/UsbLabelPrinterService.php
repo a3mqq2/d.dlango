@@ -21,8 +21,7 @@ class UsbLabelPrinterService
 
         $printer->feed(1);
 
-        $printer->barcode($code, Printer::BARCODE_CODE128);
-
+         $printer->barcode("{C}{$code}", Printer::BARCODE_CODE128);
         $printer->feed(1);
 
         $printer->setTextSize(1, 1);

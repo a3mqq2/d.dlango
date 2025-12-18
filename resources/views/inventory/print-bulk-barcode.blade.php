@@ -41,8 +41,8 @@
         }
 
         .label .barcode {
-            width: 45mm;
-            height: 15mm;
+            width: 130mm;
+            height: 90mm;
             display: flex;
             align-items: center;
             justify-content: center;

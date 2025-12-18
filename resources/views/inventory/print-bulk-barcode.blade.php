@@ -51,10 +51,10 @@ body {
 
 .product-code {
     position: absolute;
-    top: 18mm;
+    top: 17.5mm;
     left: 0;
     width: 38mm;
-    font-size: 8px;
+    font-size: 9px;
     font-family: monospace;
     font-weight: bold;
     text-align: center;
@@ -65,7 +65,7 @@ body {
     top: 21mm;
     left: 0;
     width: 38mm;
-    font-size: 9px;
+    font-size: 10px;
     font-weight: bold;
     text-align: center;
 }

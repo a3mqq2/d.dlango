@@ -34,7 +34,7 @@ body {
     top: 1mm;
     left: 1mm;
     width: 36mm;
-    font-size: 7px;
+    font-size: 9px;
     font-weight: bold;
     text-align: center;
     white-space: nowrap;
@@ -44,7 +44,7 @@ body {
 .barcode {
     position: absolute;
     top: 7mm;
-    left: 4mm;
+    left: 1mm;
     width: 30mm;
     height: 10mm;
 }
@@ -110,4 +110,4 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 </body>
-</html>
+</html>. 

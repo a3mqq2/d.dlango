@@ -15,8 +15,6 @@
             direction: {{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }};
         }
         .barcode-page {
-            width: 38mm;
-            height: 25mm;
             padding: 0;
             display: flex;
             flex-direction: column;

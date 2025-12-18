@@ -6,79 +6,67 @@
     <title>{{ __('messages.print_barcode') }}</title>
     <style>
         * {
-            margin: 0 !important;
-            padding: 0 !important;
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
-        html, body {
-            margin: 0 !important;
-            padding: 0 !important;
-        }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             direction: {{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }};
         }
         .barcode-page {
-            width: 38mm;
-            height: 25mm;
-            padding: 0.5mm !important;
+            width: 80mm;
+            height: 50mm;
+            padding: 3mm;
             text-align: center;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             page-break-after: always;
-            overflow: hidden;
+            margin: 0 auto;
         }
         .barcode-page:last-child {
             page-break-after: auto;
         }
         .barcode-page .product-name {
-            font-size: 8px;
+            font-size: 12px;
             font-weight: bold;
-            line-height: 1;
+            line-height: 1.2;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            margin: 0 !important;
-            padding: 0 !important;
         }
         .barcode-page .barcode {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 !important;
-            padding: 0 !important;
         }
         .barcode-page .barcode svg {
-            width: 36mm;
-            height: 15mm;
+            width: 70mm;
+            height: 20mm;
         }
         .barcode-page .product-code {
-            font-size: 8px;
+            font-size: 10px;
             font-weight: bold;
             font-family: monospace;
-            margin: 0 !important;
-            padding: 0 !important;
         }
         .barcode-page .product-price {
-            font-size: 9px;
+            font-size: 11px;
             font-weight: bold;
             color: #000;
-            margin: 0 !important;
-            padding: 0 !important;
         }
         .no-print {
             text-align: center;
-            padding: 20px !important;
+            padding: 20px;
             background: #f8f9fa;
             border-bottom: 1px solid #ddd;
         }
         .no-print button {
-            padding: 10px 30px !important;
+            padding: 10px 30px;
             font-size: 16px;
             cursor: pointer;
-            margin: 0 5px !important;
+            margin: 0 5px;
             border: none;
             border-radius: 5px;
         }
@@ -92,35 +80,26 @@
         }
         .summary {
             text-align: center;
-            padding: 10px !important;
+            padding: 10px;
             background: #e9ecef;
             font-size: 14px;
         }
         @media print {
-            .no-print, .summary { display: none !important; }
-            html, body {
-                width: 38mm !important;
-                height: 25mm !important;
-                margin: 0 !important;
-                padding: 0 !important;
+            .no-print, .summary { display: none; }
+            @page {
+                size: 80mm 50mm landscape;
+                margin: 0;
             }
             .barcode-page {
-                width: 38mm !important;
-                height: 25mm !important;
-                margin: 0 !important;
-                padding: 1mm !important;
-                border: none !important;
-            }
-            @page {
-                size: 25mm 38mm;
-                margin: 0 !important;
-                padding: 0 !important;
+                width: 80mm;
+                height: 50mm;
             }
         }
+        /* Preview mode - show bordered boxes */
         @media screen {
             .barcode-page {
                 border: 1px dashed #ccc;
-                margin: 5px auto !important;
+                margin: 10px auto;
                 background: white;
             }
         }
@@ -132,7 +111,7 @@
         <button class="btn-back" onclick="window.history.back()">
             {{ __('messages.back') }}
         </button>
-        <button class="btn-print" onclick="printBarcodes()">
+        <button class="btn-print" onclick="window.print()">
             {{ __('messages.print') }}
         </button>
     </div>
@@ -140,7 +119,7 @@
     <div class="summary">
         {{ __('messages.total_barcodes') }}: <strong>{{ count($barcodes) }}</strong>
         &nbsp;|&nbsp;
-        {{ __('messages.label_size') }}: <strong>38mm x 25mm</strong>
+        {{ __('messages.label_size') }}: <strong>80mm x 50mm</strong>
     </div>
 
     @foreach($barcodes as $index => $item)
@@ -160,33 +139,12 @@
                 JsBarcode("#barcode-{{ $index }}", "{{ $item['code'] }}", {
                     format: "CODE128",
                     width: 1.5,
-                    height: 40,
+                    height: 35,
                     displayValue: false,
                     margin: 0
                 });
             @endforeach
         });
     </script>
-
-    <script>
-function printBarcodes() {
-    fetch('/dlango/public/inventory/print-barcodes-raw', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({
-            barcodes: @json($barcodes)
-        })
-    })
-    .then(r => r.json())
-    .then(r => alert('Printed: ' + r.count))
-    .catch(() => alert('Print failed'));
-}
-</script>
-
-
-
 </body>
 </html>

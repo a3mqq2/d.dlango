@@ -16,8 +16,8 @@
 
         /* ملصق بالعرض: 50mm عرض × 30mm ارتفاع */
         .label {
-            width: 50mm;
-            height: 30mm;
+            width: 150mm;
+            height: 100mm;
             padding: 2mm;
             display: flex;
             flex-direction: column;

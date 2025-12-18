@@ -15,6 +15,7 @@ use App\Http\Controllers\POSController;
 use App\Http\Controllers\SaleReturnController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ReportsController;
+use App\Services\UsbLabelPrinterService;
 
 
 Route::redirect('/', '/home');
@@ -193,4 +194,16 @@ Route::middleware('auth')->group(function () {
         Route::get('reports/print', [ReportsController::class, 'print'])->name('reports.print');
         Route::get('reports/export', [ReportsController::class, 'export'])->name('reports.export');
     });
+});
+
+
+
+
+Route::get('/print-test', function (UsbLabelPrinterService $printer) {
+    $printer->printLabel(
+        code: '5550',
+        price: 5.00,
+        currency: 'LYD',
+        name: 'Test Product'
+    );
 });

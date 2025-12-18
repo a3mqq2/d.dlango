@@ -15,138 +15,137 @@
             direction: {{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }};
         }
         .barcode-page {
-            width: 25mm;
-            height: 38mm;
-            padding: 2mm;
-            text-align: center;
+            width: 38mm;
+            height: 25mm;
+            padding: 1mm;
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
             align-items: center;
+            justify-content: center;
+            text-align: center;
             page-break-after: always;
-            margin: 0 auto;
             overflow: hidden;
         }
         .barcode-page:last-child {
             page-break-after: auto;
         }
-        .barcode-page .product-name {
+        .product-name {
             font-size: 7px;
             font-weight: bold;
-            line-height: 1.1;
+            width: 100%;
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
-            width: 100%;
         }
-        .barcode-page .barcode {
+        .barcode {
+            flex: 1;
+            width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 100%;
         }
-        .barcode-page .barcode svg {
-            width: 22mm;
-            height: 18mm;
+        .barcode svg {
+            width: 30mm;
+            height: auto;
         }
-        .barcode-page .product-code {
+        .product-code {
             font-size: 8px;
-            font-weight: bold;
             font-family: monospace;
+            font-weight: bold;
         }
-        .barcode-page .product-price {
+        .product-price {
             font-size: 9px;
             font-weight: bold;
-            color: #000;
         }
         .no-print {
             text-align: center;
-            padding: 20px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #ddd;
+            padding: 15px;
+            background: #f5f5f5;
         }
         .no-print button {
-            padding: 10px 30px;
-            font-size: 16px;
+            padding: 8px 20px;
+            font-size: 14px;
             cursor: pointer;
-            margin: 0 5px;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
+            margin: 0 5px;
         }
-        .no-print .btn-print {
+        .btn-print {
             background: #007bff;
-            color: white;
+            color: #fff;
         }
-        .no-print .btn-back {
+        .btn-back {
             background: #6c757d;
-            color: white;
+            color: #fff;
         }
         .summary {
             text-align: center;
-            padding: 10px;
+            padding: 8px;
+            font-size: 13px;
             background: #e9ecef;
-            font-size: 14px;
         }
         @media print {
-            .no-print, .summary { display: none; }
+            .no-print, .summary {
+                display: none;
+            }
             @page {
-                size: 25mm 38mm;
+                size: 38mm 25mm;
                 margin: 0;
             }
             .barcode-page {
-                width: 25mm;
-                height: 38mm;
+                width: 38mm;
+                height: 25mm;
             }
         }
         @media screen {
             .barcode-page {
                 border: 1px dashed #ccc;
                 margin: 10px auto;
-                background: white;
+                background: #fff;
             }
         }
     </style>
     <script src="{{ asset('assets/vendor/jsbarcode/JsBarcode.all.min.js') }}"></script>
 </head>
 <body>
-    <div class="no-print">
-        <button class="btn-back" onclick="window.history.back()">
-            {{ __('messages.back') }}
-        </button>
-        <button class="btn-print" onclick="window.print()">
-            {{ __('messages.print') }}
-        </button>
-    </div>
 
-    <div class="summary">
-        {{ __('messages.total_barcodes') }}: <strong>{{ count($barcodes) }}</strong>
-        &nbsp;|&nbsp;
-        {{ __('messages.label_size') }}: <strong>38mm x 25mm (landscape)</strong>
-    </div>
+<div class="no-print">
+    <button class="btn-back" onclick="window.history.back()">{{ __('messages.back') }}</button>
+    <button class="btn-print" onclick="window.print()">{{ __('messages.print') }}</button>
+</div>
 
-    @foreach($barcodes as $index => $item)
-        <div class="barcode-page">
-            <div class="product-name">{{ $item['name'] }}</div>
-            <div class="barcode">
-                <svg id="barcode-{{ $index }}"></svg>
-            </div>
-            <div class="product-code">{{ $item['code'] }}</div>
-            <div class="product-price">{{ number_format($item['price'], 2) }} {{ __('messages.currency') }}</div>
+<div class="summary">
+    {{ __('messages.total_barcodes') }}:
+    <strong>{{ count($barcodes) }}</strong>
+    |
+    {{ __('messages.label_size') }}:
+    <strong>38mm × 25mm</strong>
+</div>
+
+@foreach($barcodes as $index => $item)
+    <div class="barcode-page">
+        <div class="product-name">{{ $item['name'] }}</div>
+        <div class="barcode">
+            <svg id="barcode-{{ $index }}"></svg>
         </div>
-    @endforeach
+        <div class="product-code">{{ $item['code'] }}</div>
+        <div class="product-price">{{ number_format($item['price'], 2) }} {{ __('messages.currency') }}</div>
+    </div>
+@endforeach
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            @foreach($barcodes as $index => $item)
-                JsBarcode("#barcode-{{ $index }}", "{{ $item['code'] }}", {
-                    format: "CODE128",
-                    width: 1.2,
-                    height: 45,
-                    displayValue: false,
-                    margin: 0
-                });
-            @endforeach
-        });
-    </script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+@foreach($barcodes as $index => $item)
+    JsBarcode("#barcode-{{ $index }}", "{{ $item['code'] }}", {
+        format: "CODE128",
+        width: 1,
+        height: 28,
+        displayValue: false,
+        margin: 0
+    });
+@endforeach
+});
+</script>
+
 </body>
 </html>

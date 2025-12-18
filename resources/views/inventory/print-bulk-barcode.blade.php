@@ -112,7 +112,7 @@
                 border: none !important;
             }
             @page {
-                size: 38mm 25mm;
+                size: 25mm 38mm;
                 margin: 0 !important;
                 padding: 0 !important;
             }

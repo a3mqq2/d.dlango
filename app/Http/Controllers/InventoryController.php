@@ -189,4 +189,38 @@ class InventoryController extends Controller
 
         return view('inventory.print-bulk-barcode', compact('barcodes'));
     }
+
+public function printBarcodesRaw(Request $request)
+{
+    $barcodes = $request->input('barcodes');
+
+    $tspl = "SIZE 38 mm,25 mm\n";
+    $tspl .= "GAP 2 mm,0 mm\n";
+    $tspl .= "DENSITY 7\n";
+    $tspl .= "SPEED 2\n";
+    $tspl .= "DIRECTION 1\n";
+    $tspl .= "REFERENCE 0,0\n";
+    $tspl .= "CLS\n";
+
+    foreach ($barcodes as $item) {
+        $name = substr(preg_replace('/[^A-Za-z0-9 \\-]/', '', $item['name']), 0, 22);
+        $code = $item['code'];
+        $price = number_format($item['price'], 2);
+
+        $tspl .= "TEXT 2,2,\"0\",0,1,1,\"$name\"\n";
+        $tspl .= "BARCODE 2,12,\"128\",18,1,0,2,2,\"$code\"\n";
+        $tspl .= "TEXT 2,32,\"0\",0,1,1,\"$code\"\n";
+        $tspl .= "TEXT 2,40,\"0\",0,1,1,\"$price LYD\"\n";
+        $tspl .= "PRINT 1,1\n";
+        $tspl .= "CLS\n";
+    }
+
+    file_put_contents("\\\\localhost\\EML-200L", $tspl);
+
+    return response()->json([
+        'status' => 'ok',
+        'count' => count($barcodes)
+    ]);
+}
+
 }

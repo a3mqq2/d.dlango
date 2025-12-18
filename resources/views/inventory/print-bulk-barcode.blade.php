@@ -132,7 +132,7 @@
         <button class="btn-back" onclick="window.history.back()">
             {{ __('messages.back') }}
         </button>
-        <button class="btn-print" onclick="window.print()">
+        <button class="btn-print" onclick="printBarcodes()">
             {{ __('messages.print') }}
         </button>
     </div>
@@ -167,5 +167,26 @@
             @endforeach
         });
     </script>
+
+    <script>
+function printBarcodes() {
+    fetch('/inventory/print-barcodes-raw', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            barcodes: @json($barcodes)
+        })
+    })
+    .then(r => r.json())
+    .then(r => alert('Printed: ' + r.count))
+    .catch(() => alert('Print failed'));
+}
+</script>
+
+
+
 </body>
 </html>

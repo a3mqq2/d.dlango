@@ -112,6 +112,7 @@ Route::middleware('auth')->group(function () {
         Route::get('inventory/{product}/barcode', [InventoryController::class, 'barcodeForm'])->name('inventory.barcode-form');
         Route::get('inventory/barcode/print', [InventoryController::class, 'printBarcode'])->name('inventory.print-barcode');
         Route::post('inventory/barcode/bulk', [InventoryController::class, 'bulkBarcode'])->name('inventory.bulk-barcode');
+        Route::post('/inventory/print-barcodes-raw', [InventoryController::class, 'printBarcodesRaw']);
     });
 
     // Customers

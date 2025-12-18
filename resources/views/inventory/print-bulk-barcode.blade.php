@@ -44,7 +44,7 @@ body {
 .barcode {
     position: absolute;
     top: 7mm;
-    left: 1mm;
+    left: 6mm;
     width: 30mm;
     height: 10mm;
 }

@@ -1484,96 +1484,56 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===== KEYBOARD SHORTCUTS =====
     document.addEventListener('keydown', function(e) {
-        // Don't trigger shortcuts when typing in inputs (except search)
-        const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
         const isSearchFocused = document.activeElement === productSearch;
+        const searchEmpty = productSearch.value.trim() === '';
 
-        // Space = Complete Sale (when not typing or search is focused and empty)
-        if (e.code === 'Space' && (!isTyping || (isSearchFocused && productSearch.value.trim() === ''))) {
-            if (cart.length > 0 && !payBtn.disabled) {
+        // Shortcuts when search is focused and empty
+        if (isSearchFocused && searchEmpty) {
+
+            // Space = Complete Sale
+            if (e.code === 'Space') {
+                if (cart.length > 0 && !payBtn.disabled) {
+                    e.preventDefault();
+                    payBtn.click();
+                }
+            }
+
+            // Arrow Up = Increase quantity of last item
+            if (e.key === 'ArrowUp') {
                 e.preventDefault();
-                payBtn.click();
+                if (cart.length > 0) {
+                    const lastIndex = cart.length - 1;
+                    updateQuantity(lastIndex, 1);
+                }
+            }
+
+            // Arrow Down = Decrease quantity of last item
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (cart.length > 0) {
+                    const lastIndex = cart.length - 1;
+                    updateQuantity(lastIndex, -1);
+                }
+            }
+
+            // Delete = Remove last item from cart
+            if (e.key === 'Delete') {
+                e.preventDefault();
+                if (cart.length > 0) {
+                    cart.pop();
+                    renderCart();
+                    focusSearch();
+                }
             }
         }
 
-        // F1 = Focus Search
-        if (e.key === 'F1') {
-            e.preventDefault();
-            focusSearch();
-        }
-
-        // F2 = Clear Cart
-        if (e.key === 'F2') {
-            e.preventDefault();
-            if (cart.length > 0 && confirm('{{ __("messages.confirm_clear_cart") }}')) {
-                cart = [];
-                removeCoupon();
-                renderCart();
-                focusSearch();
-            }
-        }
-
-        // F3 = Add Customer
-        if (e.key === 'F3') {
-            e.preventDefault();
-            document.getElementById('addCustomerBtn').click();
-        }
-
-        // F4 = Toggle Payment Method (Cash/Credit)
-        if (e.key === 'F4') {
-            e.preventDefault();
-            const cashRadio = document.getElementById('payCash');
-            const creditRadio = document.getElementById('payCredit');
-            if (cashRadio.checked && !creditRadio.disabled) {
-                creditRadio.checked = true;
-                creditRadio.dispatchEvent(new Event('change'));
-            } else {
-                cashRadio.checked = true;
-                cashRadio.dispatchEvent(new Event('change'));
-            }
-        }
-
-        // F5 = Refresh Products
-        if (e.key === 'F5') {
-            e.preventDefault();
-            loadProducts();
-        }
-
-        // Escape = Clear Search / Close Modal
+        // Escape = Clear Search (works always)
         if (e.key === 'Escape') {
             if (productSearch.value !== '') {
                 productSearch.value = '';
                 renderProducts(products);
             }
             focusSearch();
-        }
-
-        // Delete = Remove last item from cart
-        if (e.key === 'Delete' && !isTyping) {
-            e.preventDefault();
-            if (cart.length > 0) {
-                cart.pop();
-                renderCart();
-                focusSearch();
-            }
-        }
-
-        // + = Increase quantity of last item
-        if ((e.key === '+' || e.key === '=') && !isTyping) {
-            e.preventDefault();
-            if (cart.length > 0) {
-                const lastIndex = cart.length - 1;
-                updateQuantity(lastIndex, 1);
-            }
-        }
-
-        // - = Decrease quantity of last item
-        if (e.key === '-' && !isTyping) {
-            e.preventDefault();
-            if (cart.length > 0) {
-                const lastIndex = cart.length - 1;
-                updateQuantity(lastIndex, -1);
-            }
         }
     });
 

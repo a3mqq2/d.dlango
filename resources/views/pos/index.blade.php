@@ -115,6 +115,69 @@
     .discount-toggle:hover {
         color: #b65f7a !important;
     }
+    /* Held Invoices Tabs */
+    .held-invoices-bar {
+        display: flex;
+        gap: 0.25rem;
+        padding: 0.5rem;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+        overflow-x: auto;
+        flex-shrink: 0;
+    }
+    .held-invoice-tab {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.6rem;
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+    .held-invoice-tab:hover {
+        border-color: #b65f7a;
+    }
+    .held-invoice-tab.active {
+        background: linear-gradient(135deg, #b65f7a 0%, #8b4558 100%);
+        color: white;
+        border-color: transparent;
+    }
+    .held-invoice-tab .tab-close {
+        opacity: 0.7;
+        font-size: 0.65rem;
+    }
+    .held-invoice-tab .tab-close:hover {
+        opacity: 1;
+    }
+    .held-invoice-tab.active .tab-close {
+        color: white;
+    }
+    .new-invoice-btn {
+        padding: 0.35rem 0.5rem;
+        background: #e9ecef;
+        border: 1px dashed #adb5bd;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .new-invoice-btn:hover {
+        background: #dee2e6;
+        border-color: #b65f7a;
+    }
+    .btn-hold {
+        background: #6c757d;
+        border: none;
+        color: white;
+    }
+    .btn-hold:hover {
+        background: #5a6268;
+        color: white;
+    }
     .btn-pay {
         background: linear-gradient(135deg, #b65f7a 0%, #8b4558 100%);
         border: none;
@@ -402,7 +465,18 @@
         {{-- Cart Section --}}
         <div class="col-lg-4">
             <div class="cart-section">
-             
+
+                {{-- Held Invoices Tabs --}}
+                <div class="held-invoices-bar" id="heldInvoicesBar">
+                    <div class="held-invoice-tab active" data-index="0" onclick="switchInvoice(0)">
+                        <i class="ti ti-file-invoice"></i>
+                        <span>{{ __('messages.invoice') }} 1</span>
+                    </div>
+                    <div class="new-invoice-btn" onclick="createNewInvoice()" title="{{ __('messages.new_invoice') }}">
+                        <i class="ti ti-plus"></i>
+                    </div>
+                </div>
+
                 {{-- Customer Selection --}}
                 <div class="p-2 border-bottom flex-shrink-0">
                     <div class="customer-select-wrapper">
@@ -517,11 +591,16 @@
                     {{-- Paid Amount (hidden, auto-filled) --}}
                     <input type="hidden" id="paidAmount" value="0">
 
-                    {{-- Pay Button --}}
-                    <button type="button" class="btn btn-pay w-100 text-white" id="payBtn" disabled>
-                        <i class="ti ti-check me-1"></i>
-                        {{ __('messages.complete_sale') }}
-                    </button>
+                    {{-- Hold & Pay Buttons --}}
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-hold" id="holdBtn" disabled title="{{ __('messages.hold_invoice') }} (H)">
+                            <i class="ti ti-player-pause"></i>
+                        </button>
+                        <button type="button" class="btn btn-pay flex-fill text-white" id="payBtn" disabled>
+                            <i class="ti ti-check me-1"></i>
+                            {{ __('messages.complete_sale') }}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -632,6 +711,10 @@ document.addEventListener('DOMContentLoaded', function() {
     let couponDiscount = 0;
     let justReturnedFromQtyEdit = false; // Track if user just returned from editing qty
 
+    // ===== HELD INVOICES SYSTEM =====
+    let invoices = [{ cart: [], customerId: null, discount: 0, discountType: 'fixed', coupon: null, couponDiscount: 0 }];
+    let currentInvoiceIndex = 0;
+
     const productSearch = document.getElementById('productSearch');
     const productsContainer = document.getElementById('productsContainer');
     const cartItems = document.getElementById('cartItems');
@@ -639,6 +722,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const loadingProducts = document.getElementById('loadingProducts');
     const noProducts = document.getElementById('noProducts');
     const payBtn = document.getElementById('payBtn');
+    const holdBtn = document.getElementById('holdBtn');
+    const heldInvoicesBar = document.getElementById('heldInvoicesBar');
     const successModal = new bootstrap.Modal(document.getElementById('successModal'));
     const variantsModal = new bootstrap.Modal(document.getElementById('variantsModal'));
 
@@ -974,6 +1059,7 @@ document.addEventListener('DOMContentLoaded', function() {
             cartItems.innerHTML = '';
             cartItems.appendChild(emptyCart);
             payBtn.disabled = true;
+            holdBtn.disabled = true;
         } else {
             emptyCart.style.display = 'none';
             cartItems.innerHTML = cart.map((item, index) => `
@@ -1008,10 +1094,137 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `).join('');
             payBtn.disabled = false;
+            holdBtn.disabled = false;
         }
 
         updateTotals();
+        updateInvoiceTabs();
     }
+
+    // ===== HELD INVOICES FUNCTIONS =====
+
+    // Save current invoice state
+    function saveCurrentInvoice() {
+        invoices[currentInvoiceIndex] = {
+            cart: [...cart],
+            customerId: document.getElementById('customerSelect').value,
+            discount: parseFloat(document.getElementById('discountInput').value) || 0,
+            discountType: document.getElementById('discountType').value,
+            coupon: appliedCoupon,
+            couponDiscount: couponDiscount
+        };
+    }
+
+    // Load invoice state
+    function loadInvoice(index) {
+        const invoice = invoices[index];
+        cart = [...invoice.cart];
+        document.getElementById('customerSelect').value = invoice.customerId || document.getElementById('customerSelect').options[0].value;
+        document.getElementById('discountInput').value = invoice.discount || 0;
+        document.getElementById('discountType').value = invoice.discountType || 'fixed';
+        appliedCoupon = invoice.coupon;
+        couponDiscount = invoice.couponDiscount || 0;
+
+        // Update coupon UI
+        if (appliedCoupon) {
+            document.getElementById('appliedCouponCode').textContent = appliedCoupon.code;
+            document.getElementById('appliedCouponDiscount').textContent = appliedCoupon.discount_text;
+            document.getElementById('appliedCoupon').classList.remove('d-none');
+        } else {
+            document.getElementById('appliedCoupon').classList.add('d-none');
+        }
+
+        updatePaymentMethodVisibility();
+        renderCart();
+    }
+
+    // Switch to invoice
+    window.switchInvoice = function(index) {
+        if (index === currentInvoiceIndex) return;
+        saveCurrentInvoice();
+        currentInvoiceIndex = index;
+        loadInvoice(index);
+        focusSearch();
+    };
+
+    // Create new invoice
+    window.createNewInvoice = function() {
+        saveCurrentInvoice();
+        invoices.push({ cart: [], customerId: null, discount: 0, discountType: 'fixed', coupon: null, couponDiscount: 0 });
+        currentInvoiceIndex = invoices.length - 1;
+        loadInvoice(currentInvoiceIndex);
+        focusSearch();
+    };
+
+    // Delete invoice
+    window.deleteInvoice = function(index, e) {
+        e.stopPropagation();
+        if (invoices.length === 1) {
+            // Reset the only invoice
+            cart = [];
+            appliedCoupon = null;
+            couponDiscount = 0;
+            document.getElementById('discountInput').value = 0;
+            document.getElementById('appliedCoupon').classList.add('d-none');
+            invoices[0] = { cart: [], customerId: null, discount: 0, discountType: 'fixed', coupon: null, couponDiscount: 0 };
+            renderCart();
+        } else {
+            invoices.splice(index, 1);
+            if (currentInvoiceIndex >= invoices.length) {
+                currentInvoiceIndex = invoices.length - 1;
+            } else if (index < currentInvoiceIndex) {
+                currentInvoiceIndex--;
+            } else if (index === currentInvoiceIndex) {
+                currentInvoiceIndex = Math.min(index, invoices.length - 1);
+            }
+            loadInvoice(currentInvoiceIndex);
+        }
+        focusSearch();
+    };
+
+    // Navigate invoices with arrow keys
+    function navigateInvoice(direction) {
+        const newIndex = currentInvoiceIndex + direction;
+        if (newIndex >= 0 && newIndex < invoices.length) {
+            switchInvoice(newIndex);
+        }
+    }
+
+    // Update invoice tabs UI
+    function updateInvoiceTabs() {
+        let tabsHtml = '';
+        invoices.forEach((invoice, index) => {
+            const itemCount = invoice.cart.length;
+            const isActive = index === currentInvoiceIndex;
+            const total = invoice.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            tabsHtml += `
+                <div class="held-invoice-tab ${isActive ? 'active' : ''}" data-index="${index}" onclick="switchInvoice(${index})">
+                    <i class="ti ti-file-invoice"></i>
+                    <span>${index + 1}${itemCount > 0 ? ' (' + itemCount + ')' : ''}</span>
+                    ${invoices.length > 1 ? `<i class="ti ti-x tab-close" onclick="deleteInvoice(${index}, event)"></i>` : ''}
+                </div>
+            `;
+        });
+
+        tabsHtml += `
+            <div class="new-invoice-btn" onclick="createNewInvoice()" title="{{ __('messages.new_invoice') }}">
+                <i class="ti ti-plus"></i>
+            </div>
+        `;
+
+        heldInvoicesBar.innerHTML = tabsHtml;
+    }
+
+    // Hold current invoice and create new one
+    function holdInvoice() {
+        if (cart.length === 0) return;
+        saveCurrentInvoice();
+        createNewInvoice();
+    }
+
+    // Hold button click
+    holdBtn.addEventListener('click', holdInvoice);
 
     // Update quantity functions
     window.updateQuantity = function(index, delta) {
@@ -1383,6 +1596,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('discountInput').value = 0;
                 document.getElementById('paidAmount').value = 0;
 
+                // Reset current invoice state
+                invoices[currentInvoiceIndex] = { cart: [], customerId: null, discount: 0, discountType: 'fixed', coupon: null, couponDiscount: 0 };
+
                 // Focus search for next sale
                 setTimeout(focusSearch, 100);
             } else {
@@ -1564,6 +1780,24 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('newCustomerPhone').value = '';
             addCustomerModal.show();
             setTimeout(() => document.getElementById('newCustomerName').focus(), 300);
+        }
+
+        // Arrow Left/Right = Navigate between invoices (when search is empty)
+        if (isSearchFocused && searchEmpty) {
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                navigateInvoice(-1);
+            }
+            if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                navigateInvoice(1);
+            }
+
+            // H = Hold invoice
+            if (e.key.toLowerCase() === 'h' && cart.length > 0) {
+                e.preventDefault();
+                holdInvoice();
+            }
         }
     }, true); // true = capture phase to intercept before input
 

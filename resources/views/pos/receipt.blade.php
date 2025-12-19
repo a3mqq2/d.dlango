@@ -7,11 +7,17 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:Courier New,monospace;font-size:12px;width:80mm;margin:0 auto;padding:6px;background:#fff}
-.header{text-align:center;border-bottom:2px dashed #000;padding-bottom:8px;margin-bottom:10px}
-.header img{max-width:55mm;margin:0 auto 5px;display:block}
-.info{font-size:11px;margin-bottom:10px}
+.header{text-align:center;border-bottom:2px dashed #000;padding-bottom:6px;margin-bottom:8px}
+.header img{
+width:48mm;
+height:auto;
+display:block;
+margin:0 auto 4px;
+filter:grayscale(100%) contrast(200%);
+}
+.info{font-size:11px;margin-bottom:8px}
 .info-row{display:flex;justify-content:space-between;margin-bottom:2px}
-.items{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:10px}
+.items{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px}
 .items th{border-top:1px solid #000;border-bottom:1px solid #000;padding:3px 0}
 .items td{padding:3px 0}
 .items td.qty,.items td.price,.items td.total{text-align:center}
@@ -19,9 +25,9 @@ body{font-family:Courier New,monospace;font-size:12px;width:80mm;margin:0 auto;p
 .totals{border-top:2px dashed #000;padding-top:6px;margin-top:6px}
 .totals-row{display:flex;justify-content:space-between;margin-bottom:3px}
 .grand{font-size:15px;font-weight:bold;border-top:1px solid #000;padding-top:4px}
-.footer{text-align:center;border-top:2px dashed #000;margin-top:10px;padding-top:6px;font-size:11px}
-.barcode{text-align:center;margin-top:8px}
-.barcode img{max-width:65mm}
+.footer{text-align:center;border-top:2px dashed #000;margin-top:8px;padding-top:6px;font-size:11px}
+.barcode{text-align:center;margin-top:6px}
+.barcode img{width:60mm}
 @page{size:80mm auto;margin:0}
 </style>
 </head>
@@ -34,8 +40,7 @@ if(file_exists($logoPath)){
 $logoBase64='data:image/png;base64,'.base64_encode(file_get_contents($logoPath));
 }
 
-$barcodePng = DNS1D::getBarcodePNG($sale->invoice_number,'C128',2,60);
-$barcodeBase64 = 'data:image/png;base64,'.$barcodePng;
+$barcodeBase64='data:image/png;base64,'.DNS1D::getBarcodePNG($sale->invoice_number,'C128',2,60);
 @endphp
 
 <div class="header">

@@ -630,6 +630,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentVariantProduct = null;
     let appliedCoupon = null;
     let couponDiscount = 0;
+    let justReturnedFromQtyEdit = false; // Track if user just returned from editing qty
 
     const productSearch = document.getElementById('productSearch');
     const productsContainer = document.getElementById('productsContainer');
@@ -804,6 +805,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
+        justReturnedFromQtyEdit = false; // Reset flag when new product added
         renderCart();
         return true;
     }
@@ -1027,6 +1029,7 @@ document.addEventListener('DOMContentLoaded', function() {
             cart[index].quantity = qty;
             renderCart();
         }
+        justReturnedFromQtyEdit = true; // Mark that we just returned from qty edit
         focusSearch();
     };
 
@@ -1494,7 +1497,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isSearchFocused && searchEmpty) {
 
             // Numbers 1-9 = Focus on last item quantity input and set value
-            if (/^[1-9]$/.test(e.key) && cart.length > 0) {
+            // Skip if user just returned from editing qty (they want to search by number)
+            if (/^[1-9]$/.test(e.key) && cart.length > 0 && !justReturnedFromQtyEdit) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
                 const lastIndex = cart.length - 1;

@@ -173,6 +173,14 @@ color:#fff;
 border:none
 }
 
+
+@media print{
+    .back-btn{
+        display:none !important
+    }
+}
+
+
 @page{
 size:80mm auto;
 margin:0

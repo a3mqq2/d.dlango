@@ -1364,11 +1364,22 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 currentSaleId = data.sale.id;
                 document.getElementById('invoiceNumber').textContent = data.invoice_number;
-                successModal.show();
+
+                // Auto print receipt
+                window.open(`{{ url('pos/receipt') }}?sale_id=${currentSaleId}`, '_blank');
+
+                // Reset cart and refresh
                 cart = [];
                 removeCoupon();
                 renderCart();
-                loadProducts(); // Refresh stock
+                loadProducts();
+
+                // Reset form
+                document.getElementById('discountInput').value = 0;
+                document.getElementById('paidAmount').value = 0;
+
+                // Focus search for next sale
+                setTimeout(focusSearch, 100);
             } else {
                 alert(data.message || '{{ __("messages.error_occurred") }}');
             }
@@ -1469,6 +1480,101 @@ document.addEventListener('DOMContentLoaded', function() {
     // Refocus after add customer modal closes
     document.getElementById('addCustomerModal').addEventListener('hidden.bs.modal', function() {
         focusSearch();
+    });
+
+    // ===== KEYBOARD SHORTCUTS =====
+    document.addEventListener('keydown', function(e) {
+        // Don't trigger shortcuts when typing in inputs (except search)
+        const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
+        const isSearchFocused = document.activeElement === productSearch;
+
+        // Space = Complete Sale (when not typing or search is focused and empty)
+        if (e.code === 'Space' && (!isTyping || (isSearchFocused && productSearch.value.trim() === ''))) {
+            if (cart.length > 0 && !payBtn.disabled) {
+                e.preventDefault();
+                payBtn.click();
+            }
+        }
+
+        // F1 = Focus Search
+        if (e.key === 'F1') {
+            e.preventDefault();
+            focusSearch();
+        }
+
+        // F2 = Clear Cart
+        if (e.key === 'F2') {
+            e.preventDefault();
+            if (cart.length > 0 && confirm('{{ __("messages.confirm_clear_cart") }}')) {
+                cart = [];
+                removeCoupon();
+                renderCart();
+                focusSearch();
+            }
+        }
+
+        // F3 = Add Customer
+        if (e.key === 'F3') {
+            e.preventDefault();
+            document.getElementById('addCustomerBtn').click();
+        }
+
+        // F4 = Toggle Payment Method (Cash/Credit)
+        if (e.key === 'F4') {
+            e.preventDefault();
+            const cashRadio = document.getElementById('payCash');
+            const creditRadio = document.getElementById('payCredit');
+            if (cashRadio.checked && !creditRadio.disabled) {
+                creditRadio.checked = true;
+                creditRadio.dispatchEvent(new Event('change'));
+            } else {
+                cashRadio.checked = true;
+                cashRadio.dispatchEvent(new Event('change'));
+            }
+        }
+
+        // F5 = Refresh Products
+        if (e.key === 'F5') {
+            e.preventDefault();
+            loadProducts();
+        }
+
+        // Escape = Clear Search / Close Modal
+        if (e.key === 'Escape') {
+            if (productSearch.value !== '') {
+                productSearch.value = '';
+                renderProducts(products);
+            }
+            focusSearch();
+        }
+
+        // Delete = Remove last item from cart
+        if (e.key === 'Delete' && !isTyping) {
+            e.preventDefault();
+            if (cart.length > 0) {
+                cart.pop();
+                renderCart();
+                focusSearch();
+            }
+        }
+
+        // + = Increase quantity of last item
+        if ((e.key === '+' || e.key === '=') && !isTyping) {
+            e.preventDefault();
+            if (cart.length > 0) {
+                const lastIndex = cart.length - 1;
+                updateQuantity(lastIndex, 1);
+            }
+        }
+
+        // - = Decrease quantity of last item
+        if (e.key === '-' && !isTyping) {
+            e.preventDefault();
+            if (cart.length > 0) {
+                const lastIndex = cart.length - 1;
+                updateQuantity(lastIndex, -1);
+            }
+        }
     });
 
     // Initial load

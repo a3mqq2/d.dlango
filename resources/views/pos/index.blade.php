@@ -96,24 +96,24 @@
         padding: 0.25rem;
     }
     .cart-summary {
-        padding: 0.75rem 1.25rem;
+        padding: 0.5rem 1rem;
         background: #f8f9fa;
-        border-top: 2px solid #e9ecef;
+        border-top: 1px solid #e9ecef;
         flex-shrink: 0;
-        flex-grow: 0;
     }
     .cart-total {
-        font-size: 1.25rem;
+        font-size: 1.2rem;
         font-weight: 700;
         color: #b65f7a;
     }
     .cart-actions {
-        padding: 0.75rem 1.25rem;
+        padding: 0.5rem 1rem;
         background: white;
         border-radius: 0 0 12px 12px;
         flex-shrink: 0;
-        flex-grow: 0;
-        border-top: 1px solid #e9ecef;
+    }
+    .discount-toggle:hover {
+        color: #b65f7a !important;
     }
     .btn-pay {
         background: linear-gradient(135deg, #b65f7a 0%, #8b4558 100%);
@@ -436,100 +436,77 @@
                     </div>
                 </div>
 
-                {{-- Cart Summary --}}
-                <div class="cart-summary">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted">{{ __('messages.subtotal') }}</span>
-                        <span id="cartSubtotal">0.00</span>
+                {{-- Cart Summary (Simplified) --}}
+                <div class="cart-summary py-2 px-3">
+                    {{-- Subtotal & Discount in one row --}}
+                    <div class="d-flex justify-content-between align-items-center small text-muted mb-1">
+                        <span>{{ __('messages.subtotal') }}: <span id="cartSubtotal">0.00</span></span>
+                        <span class="discount-toggle" id="discountToggle" style="cursor:pointer;">
+                            <i class="ti ti-discount-2 me-1"></i>{{ __('messages.discount') }}
+                            <span id="discountDisplay" class="text-danger"></span>
+                        </span>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-muted small">{{ __('messages.discount') }}</span>
-                        <div class="discount-wrapper">
-                            <input type="number" id="discountInput" class="form-control form-control-sm text-end" value="0" min="0" step="0.01">
-                            <select id="discountType" class="form-select form-select-sm">
+                    {{-- Discount Input (hidden by default) --}}
+                    <div id="discountSection" class="mb-2 p-2 bg-light rounded" style="display:none;">
+                        <div class="d-flex gap-2">
+                            <input type="number" id="discountInput" class="form-control form-control-sm" value="0" min="0" step="0.01" placeholder="0">
+                            <select id="discountType" class="form-select form-select-sm" style="width:70px;">
                                 <option value="fixed">{{ __('messages.currency') }}</option>
                                 <option value="percentage">%</option>
                             </select>
                         </div>
                     </div>
-                    {{-- Coupon Section --}}
-                    <div class="mb-2">
+                    {{-- Coupon (compact) --}}
+                    <div id="couponSection" class="mb-2" style="display:none;">
                         <div class="input-group input-group-sm">
-                            <input type="text" id="couponCode" class="form-control text-uppercase"
-                                   placeholder="{{ __('messages.enter_coupon') }}">
-                            <button type="button" class="btn btn-outline-primary" id="applyCouponBtn">
-                                <i class="ti ti-discount-2"></i>
-                            </button>
+                            <input type="text" id="couponCode" class="form-control text-uppercase" placeholder="{{ __('messages.enter_coupon') }}">
+                            <button type="button" class="btn btn-outline-primary" id="applyCouponBtn"><i class="ti ti-check"></i></button>
                         </div>
                         <div id="couponMessage" class="small mt-1 d-none"></div>
-                        <div id="appliedCoupon" class="d-none mt-2 p-2 bg-light rounded">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="small">
-                                    <i class="ti ti-discount-2 text-success me-1"></i>
-                                    <span id="appliedCouponCode"></span>
-                                    (<span id="appliedCouponDiscount"></span>)
-                                </span>
-                                <button type="button" class="btn btn-sm btn-link text-danger p-0" id="removeCouponBtn">
-                                    <i class="ti ti-x"></i>
-                                </button>
-                            </div>
-                        </div>
                     </div>
-                    <div id="couponDiscountRow" class="d-flex justify-content-between mb-2 d-none">
-                        <span class="text-success">{{ __('messages.coupon_discount') }}</span>
-                        <span class="text-success" id="couponDiscountAmount">-0.00</span>
+                    <div id="appliedCoupon" class="d-none small mb-1">
+                        <span class="text-success"><i class="ti ti-discount-2 me-1"></i><span id="appliedCouponCode"></span> (<span id="appliedCouponDiscount"></span>)</span>
+                        <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-1" id="removeCouponBtn"><i class="ti ti-x"></i></button>
                     </div>
-                    <hr class="my-2">
-                    <div class="d-flex justify-content-between">
+                    <div id="couponDiscountRow" class="d-flex justify-content-between small text-success d-none">
+                        <span>{{ __('messages.coupon_discount') }}</span>
+                        <span id="couponDiscountAmount">-0.00</span>
+                    </div>
+                    {{-- Total --}}
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                         <span class="fw-bold">{{ __('messages.total') }}</span>
                         <span class="cart-total" id="cartTotal">0.00 <small>{{ __('messages.currency') }}</small></span>
                     </div>
                 </div>
 
-                {{-- Cart Actions --}}
-                <div class="cart-actions">
-                    {{-- Payment Method --}}
-                    <div class="mb-2">
-                        <label class="form-label small text-muted mb-1">{{ __('messages.payment_method') }}</label>
-                        <div class="payment-methods-grid" role="group">
-                            <input type="radio" class="btn-check" name="paymentMethod" id="payCash" value="cash" checked>
-                            <label class="btn btn-sm btn-outline-success text-white" for="payCash">
-                                <i class="ti ti-cash me-1"></i>
-                                {{ __('messages.cash') }}
-                            </label>
-                            <input type="radio" class="btn-check" name="paymentMethod" id="payCredit" value="credit">
-                            <label class="btn btn-sm btn-outline-warning" for="payCredit">
-                                <i class="ti ti-calendar-due me-1"></i>
-                                {{ __('messages.credit') }}
-                            </label>
-                        </div>
+                {{-- Cart Actions (Simplified) --}}
+                <div class="cart-actions py-2 px-3">
+                    {{-- Payment buttons in single row --}}
+                    <div class="d-flex gap-1 mb-2">
+                        <input type="radio" class="btn-check" name="paymentMethod" id="payCash" value="cash" checked>
+                        <label class="btn btn-sm btn-outline-success flex-fill" for="payCash">
+                            <i class="ti ti-cash"></i> {{ __('messages.cash') }}
+                        </label>
+                        <input type="radio" class="btn-check" name="paymentMethod" id="payCredit" value="credit">
+                        <label class="btn btn-sm btn-outline-warning flex-fill" for="payCredit">
+                            <i class="ti ti-calendar-due"></i> {{ __('messages.credit') }}
+                        </label>
+                        <input type="radio" class="btn-check" name="paymentType" id="typeBankTransfer" value="bank_transfer">
+                        <label class="btn btn-sm btn-outline-info flex-fill" for="typeBankTransfer" id="bankTransferLabel">
+                            <i class="ti ti-building-bank"></i> {{ __('messages.bank_transfer') }}
+                        </label>
                     </div>
 
-                    {{-- Payment Type (for cash only: cash or bank_transfer) --}}
-                    <div id="paymentTypeSection" class="mb-2">
-                        <label class="form-label small text-muted mb-1">{{ __('messages.payment_type') }}</label>
-                        <div class="payment-methods-grid" role="group">
-                            <input type="radio" class="btn-check" name="paymentType" id="typeCash" value="cash" checked>
-                            <label class="btn btn-sm btn-outline-primary text-white" for="typeCash">
-                                <i class="ti ti-cash me-1"></i>
-                                {{ __('messages.cash') }}
-                            </label>
-                            <input type="radio" class="btn-check" name="paymentType" id="typeBankTransfer" value="bank_transfer">
-                            <label class="btn btn-sm btn-outline-info" for="typeBankTransfer">
-                                <i class="ti ti-building-bank me-1"></i>
-                                {{ __('messages.bank_transfer') }}
-                            </label>
-                        </div>
+                    {{-- Hidden: cash type for backend --}}
+                    <input type="radio" class="d-none" name="paymentType" id="typeCash" value="cash" checked>
+
+                    {{-- Bank Account (shown only for bank_transfer) --}}
+                    <div id="bankAccountSection" class="mb-2" style="display:none;">
+                        <input type="text" id="bankAccount" class="form-control form-control-sm" placeholder="{{ __('messages.bank_account_number') }}">
                     </div>
 
-                    {{-- Bank Account (for bank_transfer only) --}}
-                    <div id="bankAccountSection" class="mb-2" style="display: none;">
-                        <label class="form-label small text-muted mb-1">{{ __('messages.bank_account_number') }}</label>
-                        <input type="text" id="bankAccount" class="form-control form-control-sm" placeholder="{{ __('messages.enter_bank_account') }}">
-                    </div>
-
-                    {{-- Cashbox Selection (for cash payment only) --}}
-                    <div id="cashboxSection" class="mb-2">
+                    {{-- Cashbox (hidden if only 1) --}}
+                    <div id="cashboxSection" class="mb-2" style="display:none;">
                         <select id="cashboxSelect" class="form-select form-select-sm">
                             @foreach($cashboxes as $cashbox)
                                 <option value="{{ $cashbox->id }}">{{ $cashbox->name }}</option>
@@ -537,18 +514,12 @@
                         </select>
                     </div>
 
-                    {{-- Paid Amount (optional) --}}
-                    <div class="mb-2" id="paidAmountSection">
-                        <label class="form-label small text-muted mb-1">{{ __('messages.paid_amount') }}</label>
-                        <div class="input-group input-group-sm">
-                            <input type="number" id="paidAmount" class="form-control" min="0" step="0.01">
-                            <span class="input-group-text">{{ __('messages.currency') }}</span>
-                        </div>
-                    </div>
+                    {{-- Paid Amount (hidden, auto-filled) --}}
+                    <input type="hidden" id="paidAmount" value="0">
 
                     {{-- Pay Button --}}
                     <button type="button" class="btn btn-pay w-100 text-white" id="payBtn" disabled>
-                        <i class="ti ti-check me-2"></i>
+                        <i class="ti ti-check me-1"></i>
                         {{ __('messages.complete_sale') }}
                     </button>
                 </div>
@@ -1088,6 +1059,14 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('cartTotal').innerHTML = total.toFixed(2) + ' <small>{{ __("messages.currency") }}</small>';
         document.getElementById('paidAmount').value = total.toFixed(2);
 
+        // Update discount display
+        const discountDisplay = document.getElementById('discountDisplay');
+        if (discount > 0) {
+            discountDisplay.textContent = ' -' + discount.toFixed(2);
+        } else {
+            discountDisplay.textContent = '';
+        }
+
         // Update coupon discount display
         if (couponDiscount > 0) {
             document.getElementById('couponDiscountRow').classList.remove('d-none');
@@ -1260,7 +1239,6 @@ document.addEventListener('DOMContentLoaded', function() {
             creditLabel.title = '{{ __("messages.credit_not_allowed_for_default_customer") }}';
             // Force cash selection
             cashRadio.checked = true;
-            document.getElementById('cashboxSection').style.display = 'block';
         } else {
             // Enable credit for regular customers
             creditRadio.disabled = false;
@@ -1277,35 +1255,57 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial check
     updatePaymentMethodVisibility();
 
-    // Payment method toggle (cash or credit)
+    // Show cashbox only if more than 1
+    const cashboxOptions = document.getElementById('cashboxSelect').options;
+    if (cashboxOptions.length > 1) {
+        document.getElementById('cashboxSection').style.display = 'block';
+    }
+
+    // Toggle discount section
+    document.getElementById('discountToggle').addEventListener('click', function() {
+        const section = document.getElementById('discountSection');
+        const couponSection = document.getElementById('couponSection');
+        if (section.style.display === 'none') {
+            section.style.display = 'block';
+            couponSection.style.display = 'block';
+            document.getElementById('discountInput').focus();
+        } else {
+            section.style.display = 'none';
+            couponSection.style.display = 'none';
+        }
+    });
+
+    // Payment method toggle (cash, credit, or bank_transfer)
     document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
         radio.addEventListener('change', function() {
-            const paymentTypeSection = document.getElementById('paymentTypeSection');
-            const cashboxSection = document.getElementById('cashboxSection');
             const bankAccountSection = document.getElementById('bankAccountSection');
+            const bankTransferRadio = document.getElementById('typeBankTransfer');
+            const cashTypeRadio = document.getElementById('typeCash');
 
             if (this.value === 'cash') {
-                // Show payment type selection (cash or bank transfer)
-                paymentTypeSection.style.display = 'block';
-                cashboxSection.style.display = 'block';
-                // Reset bank account visibility based on payment type
-                const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
-                bankAccountSection.style.display = paymentType === 'bank_transfer' ? 'block' : 'none';
-            } else {
-                // Credit - hide payment type and cashbox
-                paymentTypeSection.style.display = 'none';
-                cashboxSection.style.display = 'none';
                 bankAccountSection.style.display = 'none';
+                cashTypeRadio.checked = true;
+                bankTransferRadio.checked = false;
+            } else if (this.value === 'credit') {
+                bankAccountSection.style.display = 'none';
+                cashTypeRadio.checked = true;
+                bankTransferRadio.checked = false;
             }
         });
     });
 
-    // Payment type toggle (cash or bank_transfer) - only shown when payment method is cash
-    document.querySelectorAll('input[name="paymentType"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            const bankAccountSection = document.getElementById('bankAccountSection');
-            bankAccountSection.style.display = this.value === 'bank_transfer' ? 'block' : 'none';
-        });
+    // Bank transfer toggle
+    document.getElementById('typeBankTransfer').addEventListener('change', function() {
+        const bankAccountSection = document.getElementById('bankAccountSection');
+        const cashRadio = document.getElementById('payCash');
+        const creditRadio = document.getElementById('payCredit');
+
+        if (this.checked) {
+            bankAccountSection.style.display = 'block';
+            cashRadio.checked = true;
+            creditRadio.checked = false;
+            document.getElementById('typeCash').checked = false;
+        }
     });
 
     // Pay button
@@ -1483,6 +1483,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ===== KEYBOARD SHORTCUTS =====
+    // Use capture phase to intercept before input
     document.addEventListener('keydown', function(e) {
         const isSearchFocused = document.activeElement === productSearch;
         const searchEmpty = productSearch.value.trim() === '';
@@ -1490,21 +1491,27 @@ document.addEventListener('DOMContentLoaded', function() {
         // Shortcuts when search is focused and empty
         if (isSearchFocused && searchEmpty) {
 
-            // Numbers 0-9 = Set quantity of last item
-            if (e.key >= '0' && e.key <= '9' && cart.length > 0) {
+            // Numbers 0-9 = Set quantity of last item (only pure digits, not from numpad with shift etc)
+            if (/^[0-9]$/.test(e.key) && cart.length > 0) {
                 e.preventDefault();
+                e.stopImmediatePropagation();
                 const lastIndex = cart.length - 1;
-                const currentQty = cart[lastIndex].quantity.toString();
-                const newQty = parseInt(currentQty + e.key);
+                const digit = parseInt(e.key);
 
-                // If new quantity is valid, set it
-                if (newQty >= 1 && newQty <= cart[lastIndex].max_quantity) {
-                    cart[lastIndex].quantity = newQty;
-                } else if (parseInt(e.key) >= 1 && parseInt(e.key) <= cart[lastIndex].max_quantity) {
-                    // Start fresh with just this digit
-                    cart[lastIndex].quantity = parseInt(e.key);
-                }
-                renderCart();
+                // Use timeout to accumulate digits
+                clearTimeout(window.qtyInputTimeout);
+                window.qtyInputBuffer = (window.qtyInputBuffer || '') + e.key;
+
+                window.qtyInputTimeout = setTimeout(() => {
+                    const newQty = parseInt(window.qtyInputBuffer);
+                    if (newQty >= 1 && newQty <= cart[lastIndex].max_quantity) {
+                        cart[lastIndex].quantity = newQty;
+                    } else if (newQty > cart[lastIndex].max_quantity) {
+                        cart[lastIndex].quantity = cart[lastIndex].max_quantity;
+                    }
+                    window.qtyInputBuffer = '';
+                    renderCart();
+                }, 500);
                 return;
             }
 
@@ -1562,7 +1569,7 @@ document.addEventListener('DOMContentLoaded', function() {
             addCustomerModal.show();
             setTimeout(() => document.getElementById('newCustomerName').focus(), 300);
         }
-    });
+    }, true); // true = capture phase to intercept before input
 
     // Initial load
     loadProducts();

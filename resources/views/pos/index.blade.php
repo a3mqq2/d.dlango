@@ -1192,11 +1192,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update invoice tabs UI
     function updateInvoiceTabs() {
+        // Save current invoice state first so counts are accurate
+        saveCurrentInvoice();
+
         let tabsHtml = '';
         invoices.forEach((invoice, index) => {
             const itemCount = invoice.cart.length;
             const isActive = index === currentInvoiceIndex;
-            const total = invoice.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
             tabsHtml += `
                 <div class="held-invoice-tab ${isActive ? 'active' : ''}" data-index="${index}" onclick="switchInvoice(${index})">

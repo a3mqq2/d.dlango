@@ -106,8 +106,12 @@ document.addEventListener('DOMContentLoaded', function () {
         margin: 0
     });
 @endforeach
+
+    setTimeout(function() {
+        window.print();
+    }, 500);
 });
 </script>
 
 </body>
-</html>. 
+</html>

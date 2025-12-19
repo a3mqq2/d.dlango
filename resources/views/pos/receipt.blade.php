@@ -1,272 +1,94 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ __('messages.receipt') }} - {{ $sale->invoice_number }}</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            width: 80mm;
-            margin: 0 auto;
-            padding: 10px;
-            background: white;
-        }
-        .receipt {
-            width: 100%;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 15px;
-            border-bottom: 2px dashed #000;
-            padding-bottom: 10px;
-        }
-        .header h1 {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-        .header p {
-            font-size: 11px;
-            color: #333;
-        }
-        .info {
-            margin-bottom: 15px;
-            font-size: 11px;
-        }
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 3px;
-        }
-        .items {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 15px;
-        }
-        .items th, .items td {
-            text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }};
-            padding: 5px 2px;
-            font-size: 11px;
-        }
-        .items th {
-            border-bottom: 1px solid #000;
-            border-top: 1px solid #000;
-        }
-        .items .price, .items .qty, .items .total {
-            text-align: center;
-        }
-        .items tbody tr {
-            border-bottom: 1px dashed #ccc;
-        }
-        .totals {
-            margin-top: 10px;
-            border-top: 2px dashed #000;
-            padding-top: 10px;
-        }
-        .totals-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            font-size: 12px;
-        }
-        .totals-row.grand-total {
-            font-size: 16px;
-            font-weight: bold;
-            border-top: 1px solid #000;
-            padding-top: 5px;
-            margin-top: 5px;
-        }
-        .payment-info {
-            margin-top: 15px;
-            padding: 10px;
-            background: #f5f5f5;
-            border-radius: 5px;
-            font-size: 11px;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 2px dashed #000;
-            font-size: 11px;
-        }
-        .footer p {
-            margin-bottom: 5px;
-        }
-        .barcode {
-            text-align: center;
-            margin-top: 15px;
-        }
-        .barcode svg {
-            max-width: 100%;
-        }
-        .header img {
-            display: block;
-            margin: 0 auto 10px auto;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-        @media print {
-            body {
-                width: 80mm;
-                margin: 0;
-                padding: 5px;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            .header img {
-                display: block !important;
-                visibility: visible !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            @page {
-                size: 80mm auto;
-                margin: 0;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ __('messages.receipt') }} - {{ $sale->invoice_number }}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Courier New,monospace;font-size:12px;width:80mm;margin:0 auto;padding:6px;background:#fff}
+.header{text-align:center;border-bottom:2px dashed #000;padding-bottom:8px;margin-bottom:10px}
+.header img{max-width:55mm;margin:0 auto 5px;display:block}
+.info{font-size:11px;margin-bottom:10px}
+.info-row{display:flex;justify-content:space-between;margin-bottom:2px}
+.items{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:10px}
+.items th{border-top:1px solid #000;border-bottom:1px solid #000;padding:3px 0}
+.items td{padding:3px 0}
+.items td.qty,.items td.price,.items td.total{text-align:center}
+.items tr{border-bottom:1px dashed #ccc}
+.totals{border-top:2px dashed #000;padding-top:6px;margin-top:6px}
+.totals-row{display:flex;justify-content:space-between;margin-bottom:3px}
+.grand{font-size:15px;font-weight:bold;border-top:1px solid #000;padding-top:4px}
+.footer{text-align:center;border-top:2px dashed #000;margin-top:10px;padding-top:6px;font-size:11px}
+.barcode{text-align:center;margin-top:8px}
+.barcode img{max-width:65mm}
+@page{size:80mm auto;margin:0}
+</style>
 </head>
-<body onload="window.print();">
-    <div class="receipt">
-        {{-- Header --}}
-        <div class="header">
-            @php
-                $logoPath = public_path('logo.png');
-                $logoBase64 = '';
-                if (file_exists($logoPath)) {
-                    $logoData = file_get_contents($logoPath);
-                    $logoBase64 = 'data:image/png;base64,' . base64_encode($logoData);
-                }
-            @endphp
-            @if($logoBase64)
-                <img src="{{ $logoBase64 }}" width="200" alt="Logo" style="max-width: 60mm; height: auto;">
-            @endif
-            <p>{{ __('messages.sales_receipt') }}</p>
-        </div>
+<body onload="window.print()">
 
-        {{-- Invoice Info --}}
-        <div class="info">
-            <div class="info-row">
-                <span>{{ __('messages.invoice_number') }}:</span>
-                <span>{{ $sale->invoice_number }}</span>
-            </div>
-            <div class="info-row">
-                <span>{{ __('messages.date') }}:</span>
-                <span>{{ $sale->sale_date->format('Y-m-d H:i') }}</span>
-            </div>
-            <div class="info-row">
-                <span>{{ __('messages.customer') }}:</span>
-                <span>{{ $sale->customer->name }}</span>
-            </div>
-            <div class="info-row">
-                <span>{{ __('messages.cashier') }}:</span>
-                <span>{{ $sale->user->name }}</span>
-            </div>
-        </div>
+@php
+$logoBase64=null;
+$logoPath=public_path('logo.png');
+if(file_exists($logoPath)){
+$logoBase64='data:image/png;base64,'.base64_encode(file_get_contents($logoPath));
+}
 
-        {{-- Items --}}
-        <table class="items">
-            <thead>
-                <tr>
-                    <th>{{ __('messages.item') }}</th>
-                    <th class="qty">{{ __('messages.qty') }}</th>
-                    <th class="price">{{ __('messages.price') }}</th>
-                    <th class="total">{{ __('messages.total') }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($sale->items as $item)
-                <tr>
-                    <td>{{ $item->display_name }}</td>
-                    <td class="qty">{{ $item->quantity }}</td>
-                    <td class="price">{{ number_format($item->unit_price, 2) }}</td>
-                    <td class="total">{{ number_format($item->subtotal, 2) }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+$barcodePng = DNS1D::getBarcodePNG($sale->invoice_number,'C128',2,60);
+$barcodeBase64 = 'data:image/png;base64,'.$barcodePng;
+@endphp
 
-        {{-- Totals --}}
-        <div class="totals">
-            <div class="totals-row">
-                <span>{{ __('messages.subtotal') }}:</span>
-                <span>{{ number_format($sale->subtotal, 2) }} {{ __('messages.currency') }}</span>
-            </div>
-            @if($sale->discount > 0)
-            <div class="totals-row">
-                <span>{{ __('messages.discount') }}:</span>
-                <span>-{{ number_format($sale->discount, 2) }} {{ __('messages.currency') }}</span>
-            </div>
-            @endif
-            <div class="totals-row grand-total">
-                <span>{{ __('messages.total') }}:</span>
-                <span>{{ number_format($sale->total_amount, 2) }} {{ __('messages.currency') }}</span>
-            </div>
-        </div>
+<div class="header">
+@if($logoBase64)
+<img src="{{ $logoBase64 }}">
+@endif
+<p>{{ __('messages.sales_receipt') }}</p>
+</div>
 
-        {{-- Payment Info --}}
-        <div class="payment-info">
-            <div class="totals-row">
-                <span>{{ __('messages.payment_method') }}:</span>
-                <span>{{ $sale->payment_method === 'cash' ? __('messages.cash') : __('messages.credit') }}</span>
-            </div>
-            @if($sale->payment_method === 'cash' && $sale->payment_type)
-            <div class="totals-row">
-                <span>{{ __('messages.payment_type') }}:</span>
-                <span>{{ $sale->payment_type === 'cash' ? __('messages.cash') : __('messages.bank_transfer') }}</span>
-            </div>
-            @endif
-            @if($sale->payment_type === 'bank_transfer' && $sale->bank_account)
-            <div class="totals-row">
-                <span>{{ __('messages.bank_account_number') }}:</span>
-                <span dir="ltr">{{ $sale->bank_account }}</span>
-            </div>
-            @endif
-            <div class="totals-row">
-                <span>{{ __('messages.paid') }}:</span>
-                <span>{{ number_format($sale->paid_amount, 2) }} {{ __('messages.currency') }}</span>
-            </div>
-            @if($sale->remaining_amount > 0)
-            <div class="totals-row">
-                <span>{{ __('messages.remaining') }}:</span>
-                <span>{{ number_format($sale->remaining_amount, 2) }} {{ __('messages.currency') }}</span>
-            </div>
-            @endif
-            @if($sale->paid_amount > $sale->total_amount)
-            <div class="totals-row">
-                <span>{{ __('messages.change') }}:</span>
-                <span>{{ number_format($sale->paid_amount - $sale->total_amount, 2) }} {{ __('messages.currency') }}</span>
-            </div>
-            @endif
-        </div>
+<div class="info">
+<div class="info-row"><span>{{ __('messages.invoice_number') }}</span><span>{{ $sale->invoice_number }}</span></div>
+<div class="info-row"><span>{{ __('messages.date') }}</span><span>{{ $sale->sale_date->format('Y-m-d H:i') }}</span></div>
+<div class="info-row"><span>{{ __('messages.customer') }}</span><span>{{ $sale->customer->name }}</span></div>
+<div class="info-row"><span>{{ __('messages.cashier') }}</span><span>{{ $sale->user->name }}</span></div>
+</div>
 
-        {{-- Footer --}}
-        <div class="footer">
-            <p>{{ __('messages.thank_you') }}</p>
-            <p>{{ __('messages.visit_again') }}</p>
-        </div>
+<table class="items">
+<thead>
+<tr>
+<th>{{ __('messages.item') }}</th>
+<th>{{ __('messages.qty') }}</th>
+<th>{{ __('messages.price') }}</th>
+<th>{{ __('messages.total') }}</th>
+</tr>
+</thead>
+<tbody>
+@foreach($sale->items as $item)
+<tr>
+<td>{{ $item->display_name }}</td>
+<td class="qty">{{ $item->quantity }}</td>
+<td class="price">{{ number_format($item->unit_price,2) }}</td>
+<td class="total">{{ number_format($item->subtotal,2) }}</td>
+</tr>
+@endforeach
+</tbody>
+</table>
 
-        {{-- Barcode --}}
-        <div class="barcode">
-            <svg id="barcode"></svg>
-        </div>
-    </div>
+<div class="totals">
+<div class="totals-row"><span>{{ __('messages.subtotal') }}</span><span>{{ number_format($sale->subtotal,2) }}</span></div>
+@if($sale->discount>0)
+<div class="totals-row"><span>{{ __('messages.discount') }}</span><span>-{{ number_format($sale->discount,2) }}</span></div>
+@endif
+<div class="totals-row grand"><span>{{ __('messages.total') }}</span><span>{{ number_format($sale->total_amount,2) }}</span></div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-    <script>
-        JsBarcode("#barcode", "{{ $sale->invoice_number }}", {
-            format: "CODE128",
-            width: 1.5,
-            height: 40,
-            displayValue: false
-        });
-    </script>
+<div class="footer">
+<p>{{ __('messages.thank_you') }}</p>
+<p>{{ __('messages.visit_again') }}</p>
+</div>
+
+<div class="barcode">
+<img src="{{ $barcodeBase64 }}">
+</div>
+
 </body>
 </html>

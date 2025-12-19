@@ -198,6 +198,8 @@ Route::middleware('auth')->group(function () {
 
 
 
+Route::post('/system/update', [SystemUpdateController::class, 'update'])->middleware('auth');
+
 
 Route::get('/print-test', function (UsbLabelPrinterService $printer) {
     $printer->printLabel(

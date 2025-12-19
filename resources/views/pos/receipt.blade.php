@@ -13,23 +13,14 @@ font-family:Courier New,monospace;
 font-size:14px;
 font-weight:bold;
 background:#fff;
-color:#000;
-margin:0;
-padding:0
+color:#000
 }
 
 .receipt{
 width:76mm;
 margin:0 auto;
 padding:6px;
-background:#fff;
-direction:ltr
-}
-
-html[dir="rtl"] .receipt{
-direction:rtl;
-padding-right:4mm;
-padding-left:1mm
+background:#fff
 }
 
 .header{
@@ -41,31 +32,35 @@ margin-bottom:8px
 
 .header img{
 width:50mm;
-height:auto;
 display:block;
 margin:0 auto 4px
 }
 
 .info{
-font-size:13px;
-margin-bottom:8px
+margin-bottom:8px;
+font-size:13px
 }
 
-.info-row{
-display:flex;
-justify-content:space-between;
-margin-bottom:3px
+.info table{
+width:100%;
+border-collapse:collapse
 }
 
-html[dir="rtl"] .info-row{
-flex-direction:row-reverse
+.info td{
+padding:2px 0
 }
 
-.info-row span:first-child{
+.info .label{
+width:45%;
+font-weight:bold
+}
+
+.info .value{
+width:55%;
 text-align:left
 }
 
-html[dir="rtl"] .info-row span:first-child{
+html[dir="rtl"] .info .value{
 text-align:right
 }
 
@@ -84,13 +79,12 @@ text-align:center
 }
 
 .items td{
-padding:4px 0
+padding:4px 0;
+text-align:center
 }
 
-.items td.qty,
-.items td.price,
-.items td.total{
-text-align:center
+.items td:first-child{
+text-align:right
 }
 
 .items tr{
@@ -100,23 +94,33 @@ border-bottom:1px dashed #000
 .totals{
 border-top:2px dashed #000;
 padding-top:6px;
-margin-top:6px
-}
-
-.totals-row{
-display:flex;
-justify-content:space-between;
-margin-bottom:4px;
+margin-top:6px;
 font-size:14px
 }
 
-html[dir="rtl"] .totals-row{
-flex-direction:row-reverse
+.totals table{
+width:100%;
+border-collapse:collapse
+}
+
+.totals td{
+padding:3px 0
+}
+
+.totals .label{
+text-align:right
+}
+
+.totals .value{
+text-align:left
+}
+
+html[dir="rtl"] .totals .value{
+text-align:right
 }
 
 .grand{
 font-size:17px;
-font-weight:bold;
 border-top:2px solid #000;
 padding-top:4px
 }
@@ -172,10 +176,24 @@ $barcodeBase64='data:image/png;base64,'.DNS1D::getBarcodePNG($sale->invoice_numb
 </div>
 
 <div class="info">
-<div class="info-row"><span>{{ __('messages.invoice_number') }}</span><span>{{ $sale->invoice_number }}</span></div>
-<div class="info-row"><span>{{ __('messages.date') }}</span><span>{{ $sale->sale_date->format('Y-m-d H:i') }}</span></div>
-<div class="info-row"><span>{{ __('messages.customer') }}</span><span>{{ $sale->customer->name }}</span></div>
-<div class="info-row"><span>{{ __('messages.cashier') }}</span><span>{{ $sale->user->name }}</span></div>
+<table>
+<tr>
+<td class="label">{{ __('messages.invoice_number') }}</td>
+<td class="value">{{ $sale->invoice_number }}</td>
+</tr>
+<tr>
+<td class="label">{{ __('messages.date') }}</td>
+<td class="value">{{ $sale->sale_date->format('Y-m-d H:i') }}</td>
+</tr>
+<tr>
+<td class="label">{{ __('messages.customer') }}</td>
+<td class="value">{{ $sale->customer->name }}</td>
+</tr>
+<tr>
+<td class="label">{{ __('messages.cashier') }}</td>
+<td class="value">{{ $sale->user->name }}</td>
+</tr>
+</table>
 </div>
 
 <table class="items">
@@ -191,20 +209,31 @@ $barcodeBase64='data:image/png;base64,'.DNS1D::getBarcodePNG($sale->invoice_numb
 @foreach($sale->items as $item)
 <tr>
 <td>{{ $item->display_name }}</td>
-<td class="qty">{{ $item->quantity }}</td>
-<td class="price">{{ number_format($item->unit_price,2) }}</td>
-<td class="total">{{ number_format($item->subtotal,2) }}</td>
+<td>{{ $item->quantity }}</td>
+<td>{{ number_format($item->unit_price,2) }}</td>
+<td>{{ number_format($item->subtotal,2) }}</td>
 </tr>
 @endforeach
 </tbody>
 </table>
 
 <div class="totals">
-<div class="totals-row"><span>{{ __('messages.subtotal') }}</span><span>{{ number_format($sale->subtotal,2) }}</span></div>
+<table>
+<tr>
+<td class="label">{{ __('messages.subtotal') }}</td>
+<td class="value">{{ number_format($sale->subtotal,2) }}</td>
+</tr>
 @if($sale->discount>0)
-<div class="totals-row"><span>{{ __('messages.discount') }}</span><span>-{{ number_format($sale->discount,2) }}</span></div>
+<tr>
+<td class="label">{{ __('messages.discount') }}</td>
+<td class="value">-{{ number_format($sale->discount,2) }}</td>
+</tr>
 @endif
-<div class="totals-row grand"><span>{{ __('messages.total') }}</span><span>{{ number_format($sale->total_amount,2) }}</span></div>
+<tr class="grand">
+<td class="label">{{ __('messages.total') }}</td>
+<td class="value">{{ number_format($sale->total_amount,2) }}</td>
+</tr>
+</table>
 </div>
 
 <div class="footer">

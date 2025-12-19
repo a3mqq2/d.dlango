@@ -47,20 +47,26 @@ border-collapse:collapse
 }
 
 .info td{
-padding:2px 0
+padding:2px 0;
+vertical-align:top
 }
 
 .info .label{
-width:45%;
-font-weight:bold
+width:50%;
+font-weight:bold;
+text-align:right
 }
 
 .info .value{
-width:55%;
+width:50%;
 text-align:left
 }
 
-html[dir="rtl"] .info .value{
+html[dir="ltr"] .info .label{
+text-align:left
+}
+
+html[dir="ltr"] .info .value{
 text-align:right
 }
 
@@ -87,6 +93,10 @@ text-align:center
 text-align:right
 }
 
+html[dir="ltr"] .items td:first-child{
+text-align:left
+}
+
 .items tr{
 border-bottom:1px dashed #000
 }
@@ -108,14 +118,20 @@ padding:3px 0
 }
 
 .totals .label{
+width:50%;
 text-align:right
 }
 
 .totals .value{
+width:50%;
 text-align:left
 }
 
-html[dir="rtl"] .totals .value{
+html[dir="ltr"] .totals .label{
+text-align:left
+}
+
+html[dir="ltr"] .totals .value{
 text-align:right
 }
 

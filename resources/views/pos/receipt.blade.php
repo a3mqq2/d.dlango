@@ -169,7 +169,7 @@ margin:0
 </style>
 </head>
 
-<body onload="window.print()">
+<body>
 
 @php
 $logoBase64=null;
@@ -264,6 +264,11 @@ $barcodeBase64='data:image/png;base64,'.DNS1D::getBarcodePNG($sale->invoice_numb
 </div>
 
 </div>
-
+<script>
+window.onload=()=>{
+window.print()
+setTimeout(()=>window.close(),500)
+}
+</script>
 </body>
 </html>

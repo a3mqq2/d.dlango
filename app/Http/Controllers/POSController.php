@@ -248,6 +248,9 @@ class POSController extends Controller
                 $coupon->recordUsage($validated['customer_id'], $sale->id, $couponDiscount);
             }
 
+
+            session(['print_sale_id' => $sale->id]);
+
             // Create sale items and update inventory
             foreach ($validated['items'] as $item) {
                 $itemDiscount = $item['discount'] ?? 0;
@@ -337,8 +340,13 @@ class POSController extends Controller
      */
     public function receipt()
     {
-        $sale = Sale::find(request('sale_id'));
-        $sale->load('items.product', 'items.variant', 'customer', 'user', 'cashbox');
+        $saleId = session('print_sale_id');
+
+        abort_if(!$saleId, 404);
+
+        $sale = Sale::with('items.product', 'items.variant', 'customer', 'user', 'cashbox')
+            ->findOrFail($saleId);
+
         return view('pos.receipt', compact('sale'));
     }
 

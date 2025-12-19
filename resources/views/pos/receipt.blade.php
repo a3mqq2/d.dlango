@@ -54,25 +54,26 @@ margin-bottom:8px
 .info-row{
 display:flex;
 justify-content:space-between;
-align-items:center;
-margin-bottom:3px;
-direction:ltr
+margin-bottom:3px
 }
 
 html[dir="rtl"] .info-row{
-direction:rtl
+flex-direction:row-reverse
+}
+
+.info-row span:first-child{
+text-align:left
+}
+
+html[dir="rtl"] .info-row span:first-child{
+text-align:right
 }
 
 .items{
 width:100%;
 border-collapse:collapse;
 font-size:13px;
-margin-bottom:8px;
-direction:ltr
-}
-
-html[dir="rtl"] .items{
-direction:rtl
+margin-bottom:8px
 }
 
 .items th{
@@ -106,12 +107,11 @@ margin-top:6px
 display:flex;
 justify-content:space-between;
 margin-bottom:4px;
-font-size:14px;
-direction:ltr
+font-size:14px
 }
 
 html[dir="rtl"] .totals-row{
-direction:rtl
+flex-direction:row-reverse
 }
 
 .grand{

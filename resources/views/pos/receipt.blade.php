@@ -10,7 +10,7 @@
 
 body{
 font-family:Courier New,monospace;
-font-size:14px;
+font-size:13px;
 font-weight:bold;
 background:#fff;
 color:#000
@@ -19,26 +19,26 @@ color:#000
 .receipt{
 width:76mm;
 margin:0 auto;
-padding:6px;
+padding:4px;
 background:#fff
 }
 
 .header{
 text-align:center;
-border-bottom:2px dashed #000;
-padding-bottom:6px;
-margin-bottom:8px
+border-bottom:1px dashed #000;
+padding-bottom:4px;
+margin-bottom:4px
 }
 
 .header img{
-width:50mm;
+width:48mm;
 display:block;
-margin:0 auto 4px
+margin:0 auto 2px
 }
 
 .info{
-margin-bottom:8px;
-font-size:13px
+margin-bottom:4px;
+font-size:12px
 }
 
 .info table{
@@ -47,18 +47,16 @@ border-collapse:collapse
 }
 
 .info td{
-padding:2px 0;
-vertical-align:top
+padding:1px 0
 }
 
 .info .label{
-width:50%;
-font-weight:bold;
+width:48%;
 text-align:right
 }
 
 .info .value{
-width:50%;
+width:52%;
 text-align:left
 }
 
@@ -73,19 +71,19 @@ text-align:right
 .items{
 width:100%;
 border-collapse:collapse;
-font-size:13px;
-margin-bottom:8px
+font-size:12px;
+margin-bottom:4px
 }
 
 .items th{
-border-top:2px solid #000;
-border-bottom:2px solid #000;
-padding:4px 0;
+border-top:1px solid #000;
+border-bottom:1px solid #000;
+padding:2px 0;
 text-align:center
 }
 
 .items td{
-padding:4px 0;
+padding:2px 0;
 text-align:center
 }
 
@@ -102,10 +100,10 @@ border-bottom:1px dashed #000
 }
 
 .totals{
-border-top:2px dashed #000;
-padding-top:6px;
-margin-top:6px;
-font-size:14px
+border-top:1px dashed #000;
+padding-top:3px;
+margin-top:3px;
+font-size:13px
 }
 
 .totals table{
@@ -114,7 +112,7 @@ border-collapse:collapse
 }
 
 .totals td{
-padding:3px 0
+padding:2px 0
 }
 
 .totals .label{
@@ -136,32 +134,32 @@ text-align:right
 }
 
 .grand{
-font-size:17px;
-border-top:2px solid #000;
-padding-top:4px
+font-size:15px;
+border-top:1px solid #000;
+padding-top:3px
 }
 
 .footer{
 text-align:center;
-border-top:2px dashed #000;
-margin-top:8px;
-padding-top:6px;
-font-size:13px
+border-top:1px dashed #000;
+margin-top:4px;
+padding-top:3px;
+font-size:12px
 }
 
 .barcode{
 text-align:center;
-margin-top:6px
+margin-top:3px
 }
 
 .barcode img{
-width:62mm
+width:60mm
 }
 
 .brand{
 text-align:center;
-margin-top:6px;
-font-size:12px
+margin-top:3px;
+font-size:11px
 }
 
 @page{
@@ -179,7 +177,7 @@ $logoPath=public_path('logo-dark.png');
 if(file_exists($logoPath)){
 $logoBase64='data:image/png;base64,'.base64_encode(file_get_contents($logoPath));
 }
-$barcodeBase64='data:image/png;base64,'.DNS1D::getBarcodePNG($sale->invoice_number,'C128',2.2,65);
+$barcodeBase64='data:image/png;base64,'.DNS1D::getBarcodePNG($sale->invoice_number,'C128',2.1,55);
 @endphp
 
 <div class="receipt">

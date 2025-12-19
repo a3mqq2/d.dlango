@@ -190,7 +190,7 @@
 
         {{-- Actions --}}
         <div class="d-grid gap-2">
-            <a href="{{ route('pos.receipt', $sale) }}" class="btn btn-primary" target="_blank">
+            <a href="{{ route('pos.receipt', ['sale_id' => $sale->id]) }}" class="btn btn-primary" target="_blank">
                 <i class="ti ti-printer me-1"></i>
                 {{ __('messages.print_receipt') }}
             </a>

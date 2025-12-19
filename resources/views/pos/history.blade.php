@@ -118,7 +118,7 @@
                                         <a href="{{ route('pos.show', $sale) }}" class="btn btn-sm btn-outline-primary">
                                             <i class="ti ti-eye"></i>
                                         </a>
-                                        <a href="{{ route('pos.receipt', $sale) }}" class="btn btn-sm btn-outline-secondary" target="_blank">
+                                        <a href="{{ route('pos.receipt', ['sale_id' => $sale->id] ) }}" class="btn btn-sm btn-outline-secondary" target="_blank">
                                             <i class="ti ti-printer"></i>
                                         </a>
                                     </div>

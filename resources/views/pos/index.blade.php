@@ -1384,7 +1384,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Print receipt (80mm)
     document.getElementById('printReceiptBtn').addEventListener('click', function() {
         if (currentSaleId) {
-            window.open(`/dlango/public/pos/${currentSaleId}/receipt`, '_blank');
+            window.open(`/dlango/public/pos/receipt?sale_id=${currentSaleId}`, '_blank');
         }
     });
 

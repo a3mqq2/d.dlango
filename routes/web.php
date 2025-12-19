@@ -152,7 +152,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:sales.view')->group(function () {
         Route::get('pos/history', [POSController::class, 'history'])->name('pos.history');
         Route::get('pos/{sale}', [POSController::class, 'show'])->name('pos.show');
-        Route::get('pos/{sale}/receipt', [POSController::class, 'receipt'])->name('pos.receipt');
+        Route::get('pos/receipt', [POSController::class, 'receipt'])->name('pos.receipt');
         Route::get('pos/{sale}/invoice', [POSController::class, 'invoice'])->name('pos.invoice');
     });
 

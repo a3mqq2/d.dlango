@@ -335,8 +335,9 @@ class POSController extends Controller
     /**
      * Get sale receipt
      */
-    public function receipt(Sale $sale)
+    public function receipt()
     {
+        $sale = Sale::find(request('sale_id'));
         $sale->load('items.product', 'items.variant', 'customer', 'user', 'cashbox');
         return view('pos.receipt', compact('sale'));
     }

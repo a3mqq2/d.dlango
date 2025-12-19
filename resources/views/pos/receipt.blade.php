@@ -162,6 +162,17 @@ margin-top:3px;
 font-size:11px
 }
 
+.back-btn{
+width:100%;
+margin-top:6px;
+padding:6px;
+font-size:13px;
+font-weight:bold;
+background:#000;
+color:#fff;
+border:none
+}
+
 @page{
 size:80mm auto;
 margin:0
@@ -263,12 +274,25 @@ $barcodeBase64='data:image/png;base64,'.DNS1D::getBarcodePNG($sale->invoice_numb
 شركة حلول لتقنية المعلومات HULUL-EPOS
 </div>
 
+<button class="back-btn" autofocus onclick="goBack()">رجوع</button>
+
 </div>
+
 <script>
+function goBack(){
+    window.location.href='/dlango/public/pos'
+}
+
 window.onload=()=>{
-window.print()
-setTimeout(()=>window.close(),500)
+    window.print()
+}
+
+window.onafterprint=()=>{
+    if(window.opener){
+        window.close()
+    }
 }
 </script>
+
 </body>
 </html>

@@ -34,14 +34,23 @@ filter:grayscale(100%) contrast(200%);
 <body onload="window.print()">
 
 @php
-$logoBase64=null;
-$logoPath=public_path('logo.png');
-if(file_exists($logoPath)){
-$logoBase64='data:image/png;base64,'.base64_encode(file_get_contents($logoPath));
+$logoBase64 = null;
+$logoPath = public_path('logo.png');
+
+if (file_exists($logoPath)) {
+    $img = imagecreatefrompng($logoPath);
+    imagefilter($img, IMG_FILTER_GRAYSCALE);
+    imagefilter($img, IMG_FILTER_CONTRAST, -100);
+    ob_start();
+    imagepng($img);
+    $imageData = ob_get_clean();
+    imagedestroy($img);
+    $logoBase64 = 'data:image/png;base64,' . base64_encode($imageData);
 }
 
-$barcodeBase64='data:image/png;base64,'.DNS1D::getBarcodePNG($sale->invoice_number,'C128',2,60);
+$barcodeBase64 = 'data:image/png;base64,' . DNS1D::getBarcodePNG($sale->invoice_number,'C128',2,60);
 @endphp
+
 
 <div class="header">
 @if($logoBase64)

@@ -1383,7 +1383,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Print receipt (80mm)
     document.getElementById('printReceiptBtn').addEventListener('click', function() {
-        window.open('/dlango/public/pos/receipt', '_blank');
+        window.location.href = '/dlango/public/pos/receipt';
     });
 
     // Print A4 invoice

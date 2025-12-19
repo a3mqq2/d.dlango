@@ -84,6 +84,11 @@ margin-top:8px;
 padding-top:6px;
 font-size:13px
 }
+.brand{
+text-align:center;
+margin-top:6px;
+font-size:12px
+}
 .barcode{
 text-align:center;
 margin-top:6px;
@@ -160,6 +165,10 @@ $barcodeBase64='data:image/png;base64,'.DNS1D::getBarcodePNG($sale->invoice_numb
 
 <div class="barcode">
 <img src="{{ $barcodeBase64 }}">
+</div>
+
+<div class="brand">
+شركة حلول لتقنية المعلومات HULUL-EPOS
 </div>
 
 </body>

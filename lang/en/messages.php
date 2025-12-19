@@ -1002,4 +1002,5 @@ return [
     'out_of_stock_products' => 'Out of Stock',
     'view_all' => 'View All',
     'invoice_num' => 'Invoice',
+    "price" => "Price",
 ];

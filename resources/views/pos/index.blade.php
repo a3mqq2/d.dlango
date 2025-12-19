@@ -1783,20 +1783,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Arrow Left/Right = Navigate between invoices (when search is empty)
+        // Note: Directions reversed for RTL layout (Right = previous, Left = next)
         if (isSearchFocused && searchEmpty) {
             if (e.key === 'ArrowLeft') {
                 e.preventDefault();
-                navigateInvoice(-1);
+                navigateInvoice(1); // Next invoice (appears on left in RTL)
+                return;
             }
             if (e.key === 'ArrowRight') {
                 e.preventDefault();
-                navigateInvoice(1);
+                navigateInvoice(-1); // Previous invoice (appears on right in RTL)
+                return;
             }
 
-            // H = Hold invoice
+            // H = Hold invoice and create new
             if (e.key.toLowerCase() === 'h' && cart.length > 0) {
                 e.preventDefault();
+                e.stopImmediatePropagation();
                 holdInvoice();
+                return;
             }
         }
     }, true); // true = capture phase to intercept before input

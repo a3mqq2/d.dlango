@@ -991,7 +991,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <i class="ti ti-minus"></i>
                             </button>
                             <input type="number" value="${item.quantity}" min="1" max="${item.max_quantity}"
-                                   onchange="setQuantity(${index}, this.value)" class="form-control form-control-sm">
+                                   onchange="setQuantity(${index}, this.value)"
+                                   onkeydown="if(event.key==='Enter'){setQuantity(${index}, this.value);}"
+                                   class="form-control form-control-sm qty-input">
                             <button type="button" class="btn btn-sm btn-outline-secondary" onclick="updateQuantity(${index}, 1)">
                                 <i class="ti ti-plus"></i>
                             </button>
@@ -1491,27 +1493,17 @@ document.addEventListener('DOMContentLoaded', function() {
         // Shortcuts when search is focused and empty
         if (isSearchFocused && searchEmpty) {
 
-            // Numbers 0-9 = Set quantity of last item (only pure digits, not from numpad with shift etc)
-            if (/^[0-9]$/.test(e.key) && cart.length > 0) {
+            // Numbers 1-9 = Focus on last item quantity input and set value
+            if (/^[1-9]$/.test(e.key) && cart.length > 0) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
                 const lastIndex = cart.length - 1;
-                const digit = parseInt(e.key);
-
-                // Use timeout to accumulate digits
-                clearTimeout(window.qtyInputTimeout);
-                window.qtyInputBuffer = (window.qtyInputBuffer || '') + e.key;
-
-                window.qtyInputTimeout = setTimeout(() => {
-                    const newQty = parseInt(window.qtyInputBuffer);
-                    if (newQty >= 1 && newQty <= cart[lastIndex].max_quantity) {
-                        cart[lastIndex].quantity = newQty;
-                    } else if (newQty > cart[lastIndex].max_quantity) {
-                        cart[lastIndex].quantity = cart[lastIndex].max_quantity;
-                    }
-                    window.qtyInputBuffer = '';
-                    renderCart();
-                }, 500);
+                const qtyInput = document.querySelector(`#cartItems .cart-item:last-child input[type="number"]`);
+                if (qtyInput) {
+                    qtyInput.value = e.key;
+                    qtyInput.focus();
+                    qtyInput.select();
+                }
                 return;
             }
 

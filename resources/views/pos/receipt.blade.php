@@ -4,25 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ __('messages.receipt') }} - {{ $sale->invoice_number }}</title>
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
+
 body{
 font-family:Courier New,monospace;
 font-size:14px;
 font-weight:bold;
-width:80mm;
-margin:0 auto;
-padding:6px;
 background:#fff;
-color:#000
+color:#000;
+margin:0;
+padding:0
 }
 
 .receipt{
+width:76mm;
+margin:0 auto;
+padding:6px;
+background:#fff;
 direction:ltr
 }
 
 html[dir="rtl"] .receipt{
-direction:rtl
+direction:rtl;
+padding-right:4mm;
+padding-left:1mm
 }
 
 .header{
@@ -36,8 +43,7 @@ margin-bottom:8px
 width:50mm;
 height:auto;
 display:block;
-margin:0 auto 4px;
-background:#fff
+margin:0 auto 4px
 }
 
 .info{
@@ -125,13 +131,11 @@ font-size:13px
 
 .barcode{
 text-align:center;
-margin-top:6px;
-background:#fff
+margin-top:6px
 }
 
 .barcode img{
-width:62mm;
-background:#fff
+width:62mm
 }
 
 .brand{
@@ -146,6 +150,7 @@ margin:0
 }
 </style>
 </head>
+
 <body onload="window.print()">
 
 @php

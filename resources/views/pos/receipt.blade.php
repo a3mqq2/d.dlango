@@ -6,51 +6,109 @@
 <title>{{ __('messages.receipt') }} - {{ $sale->invoice_number }}</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Courier New,monospace;font-size:12px;width:80mm;margin:0 auto;padding:6px;background:#fff}
-.header{text-align:center;border-bottom:2px dashed #000;padding-bottom:6px;margin-bottom:8px}
+body{
+font-family:Courier New,monospace;
+font-size:14px;
+font-weight:bold;
+width:80mm;
+margin:0 auto;
+padding:6px;
+background:#fff;
+color:#000
+}
+.header{
+text-align:center;
+border-bottom:2px dashed #000;
+padding-bottom:6px;
+margin-bottom:8px
+}
 .header img{
-width:48mm;
+width:50mm;
 height:auto;
 display:block;
 margin:0 auto 4px;
-filter:grayscale(100%) contrast(200%);
+background:#fff
 }
-.info{font-size:11px;margin-bottom:8px}
-.info-row{display:flex;justify-content:space-between;margin-bottom:2px}
-.items{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px}
-.items th{border-top:1px solid #000;border-bottom:1px solid #000;padding:3px 0}
-.items td{padding:3px 0}
-.items td.qty,.items td.price,.items td.total{text-align:center}
-.items tr{border-bottom:1px dashed #ccc}
-.totals{border-top:2px dashed #000;padding-top:6px;margin-top:6px}
-.totals-row{display:flex;justify-content:space-between;margin-bottom:3px}
-.grand{font-size:15px;font-weight:bold;border-top:1px solid #000;padding-top:4px}
-.footer{text-align:center;border-top:2px dashed #000;margin-top:8px;padding-top:6px;font-size:11px}
-.barcode{text-align:center;margin-top:6px}
-.barcode img{width:60mm}
-@page{size:80mm auto;margin:0}
+.info{
+font-size:13px;
+margin-bottom:8px
+}
+.info-row{
+display:flex;
+justify-content:space-between;
+margin-bottom:3px
+}
+.items{
+width:100%;
+border-collapse:collapse;
+font-size:13px;
+margin-bottom:8px
+}
+.items th{
+border-top:2px solid #000;
+border-bottom:2px solid #000;
+padding:4px 0
+}
+.items td{
+padding:4px 0
+}
+.items td.qty,
+.items td.price,
+.items td.total{
+text-align:center
+}
+.items tr{
+border-bottom:1px dashed #000
+}
+.totals{
+border-top:2px dashed #000;
+padding-top:6px;
+margin-top:6px
+}
+.totals-row{
+display:flex;
+justify-content:space-between;
+margin-bottom:4px;
+font-size:14px
+}
+.grand{
+font-size:17px;
+font-weight:bold;
+border-top:2px solid #000;
+padding-top:4px
+}
+.footer{
+text-align:center;
+border-top:2px dashed #000;
+margin-top:8px;
+padding-top:6px;
+font-size:13px
+}
+.barcode{
+text-align:center;
+margin-top:6px;
+background:#fff
+}
+.barcode img{
+width:62mm;
+background:#fff
+}
+@page{
+size:80mm auto;
+margin:0
+}
 </style>
 </head>
 <body onload="window.print()">
 
 @php
-$logoBase64 = null;
-$logoPath = public_path('logo.png');
-
-if (file_exists($logoPath)) {
-    $img = imagecreatefrompng($logoPath);
-    imagefilter($img, IMG_FILTER_GRAYSCALE);
-    imagefilter($img, IMG_FILTER_CONTRAST, -100);
-    ob_start();
-    imagepng($img);
-    $imageData = ob_get_clean();
-    imagedestroy($img);
-    $logoBase64 = 'data:image/png;base64,' . base64_encode($imageData);
+$logoBase64=null;
+$logoPath=public_path('logo-dark.png');
+if(file_exists($logoPath)){
+$logoBase64='data:image/png;base64,'.base64_encode(file_get_contents($logoPath));
 }
-
-$barcodeBase64 = 'data:image/png;base64,' . DNS1D::getBarcodePNG($sale->invoice_number,'C128',2,60);
+$barcodeBase64='data:image/png;base64,'.DNS1D::getBarcodePNG($sale->invoice_number,'C128',2.2,65);
 @endphp
-
 
 <div class="header">
 @if($logoBase64)

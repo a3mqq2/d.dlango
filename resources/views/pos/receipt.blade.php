@@ -17,7 +17,7 @@ color:#000
 }
 
 .receipt{
-width:76mm;
+width:72mm;
 margin:0 auto;
 padding:4px;
 background:#fff
@@ -31,7 +31,7 @@ margin-bottom:4px
 }
 
 .header img{
-width:48mm;
+width:44mm;
 display:block;
 margin:0 auto 2px
 }
@@ -153,7 +153,7 @@ margin-top:3px
 }
 
 .barcode img{
-width:60mm
+width:56mm
 }
 
 .brand{
@@ -177,7 +177,7 @@ $logoPath=public_path('logo-dark.png');
 if(file_exists($logoPath)){
 $logoBase64='data:image/png;base64,'.base64_encode(file_get_contents($logoPath));
 }
-$barcodeBase64='data:image/png;base64,'.DNS1D::getBarcodePNG($sale->invoice_number,'C128',2.1,55);
+$barcodeBase64='data:image/png;base64,'.DNS1D::getBarcodePNG($sale->invoice_number,'C128',2.0,52);
 @endphp
 
 <div class="receipt">

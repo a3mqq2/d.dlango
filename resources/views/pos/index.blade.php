@@ -710,6 +710,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let appliedCoupon = null;
     let couponDiscount = 0;
     let justReturnedFromQtyEdit = false; // Track if user just returned from editing qty
+    let justAddedProduct = false; // Track if user just added a product (for barcode scanning)
 
     // ===== HELD INVOICES SYSTEM =====
     let invoices = [{ cart: [], customerId: null, discount: 0, discountType: 'fixed', coupon: null, couponDiscount: 0 }];
@@ -891,6 +892,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         justReturnedFromQtyEdit = false; // Reset flag when new product added
+
+        // Set flag to prevent number keys from triggering qty shortcut during barcode scanning
+        justAddedProduct = true;
+        setTimeout(() => { justAddedProduct = false; }, 300);
+
         renderCart();
         return true;
     }
@@ -1715,8 +1721,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isSearchFocused && searchEmpty) {
 
             // Numbers 1-9 = Focus on last item quantity input and set value
-            // Skip if user just returned from editing qty (they want to search by number)
-            if (/^[1-9]$/.test(e.key) && cart.length > 0 && !justReturnedFromQtyEdit) {
+            // Skip if user just returned from editing qty or just added product (barcode scanning)
+            if (/^[1-9]$/.test(e.key) && cart.length > 0 && !justReturnedFromQtyEdit && !justAddedProduct) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
                 const lastIndex = cart.length - 1;

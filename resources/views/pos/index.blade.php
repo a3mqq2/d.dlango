@@ -1490,6 +1490,24 @@ document.addEventListener('DOMContentLoaded', function() {
         // Shortcuts when search is focused and empty
         if (isSearchFocused && searchEmpty) {
 
+            // Numbers 0-9 = Set quantity of last item
+            if (e.key >= '0' && e.key <= '9' && cart.length > 0) {
+                e.preventDefault();
+                const lastIndex = cart.length - 1;
+                const currentQty = cart[lastIndex].quantity.toString();
+                const newQty = parseInt(currentQty + e.key);
+
+                // If new quantity is valid, set it
+                if (newQty >= 1 && newQty <= cart[lastIndex].max_quantity) {
+                    cart[lastIndex].quantity = newQty;
+                } else if (parseInt(e.key) >= 1 && parseInt(e.key) <= cart[lastIndex].max_quantity) {
+                    // Start fresh with just this digit
+                    cart[lastIndex].quantity = parseInt(e.key);
+                }
+                renderCart();
+                return;
+            }
+
             // Space = Complete Sale
             if (e.code === 'Space') {
                 if (cart.length > 0 && !payBtn.disabled) {
@@ -1534,6 +1552,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 renderProducts(products);
             }
             focusSearch();
+        }
+
+        // + = Open Add Customer Modal
+        if (e.key === '+') {
+            e.preventDefault();
+            document.getElementById('newCustomerName').value = '';
+            document.getElementById('newCustomerPhone').value = '';
+            addCustomerModal.show();
+            setTimeout(() => document.getElementById('newCustomerName').focus(), 300);
         }
     });
 

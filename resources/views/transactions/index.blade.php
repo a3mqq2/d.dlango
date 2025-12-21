@@ -50,16 +50,6 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <select name="category_id" class="form-select">
-                            <option value="">{{ __('messages.all_categories') }}</option>
-                            @foreach($categories as $category)
-                                <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                                    {{ $category->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-2">
                         <select name="type" class="form-select">
                             <option value="">{{ __('messages.all_types') }}</option>
                             <option value="deposit" {{ request('type') == 'deposit' ? 'selected' : '' }}>
@@ -87,12 +77,11 @@
                     <table class="table table-hover align-middle">
                         <thead class="table-light">
                             <tr>
-                                <th width="10%">{{ __('messages.date') }}</th>
-                                <th width="15%">{{ __('messages.cashbox') }}</th>
-                                <th width="15%">{{ __('messages.recipient_payer') }}</th>
-                                <th width="10%">{{ __('messages.type') }}</th>
-                                <th width="15%">{{ __('messages.category') }}</th>
-                                <th width="15%">{{ __('messages.amount') }}</th>
+                                <th width="12%">{{ __('messages.date') }}</th>
+                                <th width="18%">{{ __('messages.cashbox') }}</th>
+                                <th width="20%">{{ __('messages.recipient_payer') }}</th>
+                                <th width="12%">{{ __('messages.type') }}</th>
+                                <th width="18%">{{ __('messages.amount') }}</th>
                                 <th width="20%" class="text-center">{{ __('messages.actions') }}</th>
                             </tr>
                         </thead>
@@ -124,11 +113,6 @@
                                         <span class="badge bg-{{ $transaction->type == 'deposit' ? 'success' : 'danger' }}">
                                             <i class="ti ti-{{ $transaction->type == 'deposit' ? 'arrow-down' : 'arrow-up' }} me-1"></i>
                                             {{ __('messages.' . $transaction->type) }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-light text-dark border">
-                                            {{ $transaction->category->name }}
                                         </span>
                                     </td>
                                     <td>
@@ -173,7 +157,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-5">
+                                    <td colspan="6" class="text-center py-5">
                                         <div class="text-muted">
                                             <i class="ti ti-arrows-exchange-off" style="font-size: 3rem; opacity: 0.3;"></i>
                                             <h5 class="mt-3">{{ __('messages.no_transactions') }}</h5>

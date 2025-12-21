@@ -141,9 +141,6 @@
                                         <td>{{ $transaction->created_at->format('Y-m-d H:i') }}</td>
                                         <td>
                                             {{ $transaction->description ?? '-' }}
-                                            @if($transaction->category)
-                                                <br><small class="text-muted">{{ $transaction->category->name }}</small>
-                                            @endif
                                         </td>
                                         <td dir="ltr" class="text-success fw-semibold">
                                             {{ $transaction->type == 'deposit' ? number_format($transaction->amount, 2) : '-' }}

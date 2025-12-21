@@ -102,7 +102,6 @@
                                     <th width="15%">{{ __('messages.type') }}</th>
                                     <th width="15%">{{ __('messages.amount') }}</th>
                                     <th width="15%">{{ __('messages.cashbox') }}</th>
-                                    <th width="15%">{{ __('messages.category') }}</th>
                                     <th>{{ __('messages.description') }}</th>
                                 </tr>
                             </thead>
@@ -134,7 +133,6 @@
                                                 {{ $transaction->cashbox->name ?? '-' }}
                                             </span>
                                         </td>
-                                        <td>{{ $transaction->category->name ?? '-' }}</td>
                                         <td class="text-muted">{{ $transaction->description ?? '-' }}</td>
                                     </tr>
                                 @endforeach

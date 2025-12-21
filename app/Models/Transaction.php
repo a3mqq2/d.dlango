@@ -13,7 +13,6 @@ class Transaction extends Model
         'cashbox_id',
         'supplier_id',
         'customer_id',
-        'transaction_category_id',
         'recipient_name',
         'recipient_id',
         'type',
@@ -31,11 +30,6 @@ class Transaction extends Model
     public function cashbox()
     {
         return $this->belongsTo(Cashbox::class);
-    }
-
-    public function category()
-    {
-        return $this->belongsTo(TransactionCategory::class, 'transaction_category_id');
     }
 
     public function supplier()

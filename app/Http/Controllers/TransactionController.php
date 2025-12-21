@@ -4,14 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use App\Models\Cashbox;
-use App\Models\TransactionCategory;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Transaction::with(['cashbox', 'category']);
+        $query = Transaction::with(['cashbox']);
 
         // Filters
         if ($request->filled('search')) {
@@ -27,34 +26,27 @@ class TransactionController extends Controller
             $query->where('cashbox_id', $request->cashbox_id);
         }
 
-        if ($request->filled('category_id')) {
-            $query->where('transaction_category_id', $request->category_id);
-        }
-
         if ($request->filled('type')) {
             $query->where('type', $request->type);
         }
 
         $transactions = $query->latest()->paginate(10);
         $cashboxes = Cashbox::all();
-        $categories = TransactionCategory::all(); // All categories for filtering
 
-        return view('transactions.index', compact('transactions', 'cashboxes', 'categories'));
+        return view('transactions.index', compact('transactions', 'cashboxes'));
     }
 
     public function create()
     {
         $cashboxes = Cashbox::all();
-        $categories = TransactionCategory::userCategories()->get(); // Only user categories for selection
 
-        return view('transactions.create', compact('cashboxes', 'categories'));
+        return view('transactions.create', compact('cashboxes'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'cashbox_id' => ['required', 'exists:cashboxes,id'],
-            'transaction_category_id' => ['required', 'exists:transaction_categories,id'],
             'recipient_name' => ['required', 'string', 'max:255'],
             'recipient_id' => ['nullable', 'string', 'max:255'],
             'type' => ['required', 'in:deposit,withdrawal'],
@@ -80,7 +72,7 @@ class TransactionController extends Controller
 
     public function show(Transaction $transaction)
     {
-        $transaction->load(['cashbox', 'category']);
+        $transaction->load(['cashbox']);
 
         return view('transactions.show', compact('transaction'));
     }
@@ -88,16 +80,14 @@ class TransactionController extends Controller
     public function edit(Transaction $transaction)
     {
         $cashboxes = Cashbox::all();
-        $categories = TransactionCategory::userCategories()->get(); // Only user categories for selection
 
-        return view('transactions.edit', compact('transaction', 'cashboxes', 'categories'));
+        return view('transactions.edit', compact('transaction', 'cashboxes'));
     }
 
     public function update(Request $request, Transaction $transaction)
     {
         $validated = $request->validate([
             'cashbox_id' => ['required', 'exists:cashboxes,id'],
-            'transaction_category_id' => ['required', 'exists:transaction_categories,id'],
             'recipient_name' => ['required', 'string', 'max:255'],
             'recipient_id' => ['nullable', 'string', 'max:255'],
             'type' => ['required', 'in:deposit,withdrawal'],
@@ -150,7 +140,7 @@ class TransactionController extends Controller
     // طباعة الإيصال
     public function printReceipt(Transaction $transaction)
     {
-        $transaction->load(['cashbox', 'category']);
+        $transaction->load(['cashbox']);
 
         return view('transactions.receipt', compact('transaction'));
     }
@@ -168,22 +158,12 @@ class TransactionController extends Controller
 
         if ($cashboxId) {
             $selectedCashbox = Cashbox::findOrFail($cashboxId);
-            $query = Transaction::where('cashbox_id', $cashboxId)->with('category');
-
-            // Filter by category if selected
-            if ($request->filled('category_id')) {
-                $query->where('transaction_category_id', $request->category_id);
-            }
+            $query = Transaction::where('cashbox_id', $cashboxId);
 
             // حساب الرصيد الافتتاحي (جميع الحركات قبل تاريخ البداية)
             if ($request->filled('from_date')) {
                 $previousQuery = Transaction::where('cashbox_id', $cashboxId)
                     ->whereDate('created_at', '<', $request->from_date);
-
-                // Apply category filter to previous transactions too
-                if ($request->filled('category_id')) {
-                    $previousQuery->where('transaction_category_id', $request->category_id);
-                }
 
                 $previousTransactions = $previousQuery->get();
 
@@ -214,13 +194,11 @@ class TransactionController extends Controller
         }
 
         $cashboxes = Cashbox::all();
-        $categories = \App\Models\TransactionCategory::orderBy('name')->get();
 
         return view('transactions.statement', compact(
             'selectedCashbox',
             'transactions',
             'cashboxes',
-            'categories',
             'openingBalance',
             'totalDeposits',
             'totalWithdrawals',
@@ -233,22 +211,12 @@ class TransactionController extends Controller
     {
         $cashboxId = $request->cashbox_id;
         $selectedCashbox = Cashbox::findOrFail($cashboxId);
-        $query = Transaction::where('cashbox_id', $cashboxId)->with('category');
-
-        // Filter by category if selected
-        if ($request->filled('category_id')) {
-            $query->where('transaction_category_id', $request->category_id);
-        }
+        $query = Transaction::where('cashbox_id', $cashboxId);
 
         // حساب الرصيد الافتتاحي (جميع الحركات قبل تاريخ البداية)
         if ($request->filled('from_date')) {
             $previousQuery = Transaction::where('cashbox_id', $cashboxId)
                 ->whereDate('created_at', '<', $request->from_date);
-
-            // Apply category filter to previous transactions too
-            if ($request->filled('category_id')) {
-                $previousQuery->where('transaction_category_id', $request->category_id);
-            }
 
             $previousTransactions = $previousQuery->get();
 

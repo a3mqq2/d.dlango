@@ -375,12 +375,6 @@
                     <span class="info-value" dir="ltr">{{ $transaction->recipient_id }}</span>
                 </div>
                 @endif
-                <div class="info-row">
-                    <span class="info-label">{{ __('messages.category') }}</span>
-                    <span class="info-value">
-                        <span class="category-badge">{{ $transaction->category->name }}</span>
-                    </span>
-                </div>
             </div>
 
             {{-- Payment Details --}}

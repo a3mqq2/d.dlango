@@ -433,29 +433,29 @@
         </div>
     </div>
 
-    {{-- Expenses by Category --}}
+    {{-- Expenses List --}}
     <div class="col-xl-6 mb-4">
         <div class="card h-100">
             <div class="card-header">
                 <h5 class="mb-0">
                     <i class="ti ti-receipt-2 me-2"></i>
-                    {{ __('messages.expenses_by_category') }}
+                    {{ __('messages.expenses') }}
                 </h5>
             </div>
             <div class="card-body">
-                @if($expensesStats['expenses_by_category']->count() > 0)
+                @if($expensesStats['expenses_list']->count() > 0)
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
-                                    <th>{{ __('messages.category') }}</th>
+                                    <th>{{ __('messages.recipient') }}</th>
                                     <th class="text-end">{{ __('messages.amount') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($expensesStats['expenses_by_category'] as $expense)
+                                @foreach($expensesStats['expenses_list'] as $expense)
                                     <tr>
-                                        <td>{{ $expense->category?->name ?? __('messages.uncategorized') }}</td>
+                                        <td>{{ $expense->recipient_name ?? __('messages.unknown') }}</td>
                                         <td class="text-end text-danger">{{ number_format($expense->total, 2) }}</td>
                                     </tr>
                                 @endforeach

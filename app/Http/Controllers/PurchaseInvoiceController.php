@@ -9,7 +9,6 @@ use App\Models\ProductVariant;
 use App\Models\Supplier;
 use App\Models\Cashbox;
 use App\Models\Transaction;
-use App\Models\TransactionCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -216,11 +215,9 @@ class PurchaseInvoiceController extends Controller
                 $cashbox->save();
 
                 // Create withdrawal transaction for cashbox records (without supplier_id)
-                $paymentCategory = TransactionCategory::getSystemCategory(__('messages.purchase_payment'));
                 Transaction::create([
                     'cashbox_id' => $validated['cashbox_id'],
                     'supplier_id' => null, // Not linked to supplier - cash payment is immediate
-                    'transaction_category_id' => $paymentCategory->id,
                     'recipient_name' => $supplier->name,
                     'recipient_id' => $supplier->phone,
                     'type' => 'withdrawal',
@@ -230,12 +227,9 @@ class PurchaseInvoiceController extends Controller
             } else {
                 // Credit payment - affects supplier balance (we owe supplier)
                 // No cashbox needed for credit purchases - only affects supplier balance
-                $creditCategory = TransactionCategory::getSystemCategory(__('messages.credit_purchase'));
-
                 Transaction::create([
                     'cashbox_id' => null, // No cashbox for credit purchases
                     'supplier_id' => $supplier->id, // Linked to supplier - credit affects balance
-                    'transaction_category_id' => $creditCategory->id,
                     'recipient_name' => $supplier->name,
                     'recipient_id' => $supplier->phone,
                     'type' => 'withdrawal',
@@ -314,7 +308,6 @@ class PurchaseInvoiceController extends Controller
 
         try {
             $supplier = Supplier::find($purchaseInvoice->supplier_id);
-            $cancelCategory = TransactionCategory::getSystemCategory(__('messages.invoice_cancellation'));
 
             if ($purchaseInvoice->payment_method === 'cash') {
                 // Reverse cashbox withdrawal - supplier account NOT affected
@@ -326,7 +319,6 @@ class PurchaseInvoiceController extends Controller
                 Transaction::create([
                     'cashbox_id' => $purchaseInvoice->cashbox_id,
                     'supplier_id' => null, // Not linked to supplier
-                    'transaction_category_id' => $cancelCategory->id,
                     'recipient_name' => $supplier->name,
                     'recipient_id' => $supplier->phone,
                     'type' => 'deposit',
@@ -340,7 +332,6 @@ class PurchaseInvoiceController extends Controller
                 Transaction::create([
                     'cashbox_id' => null, // No cashbox for credit cancellations
                     'supplier_id' => $supplier->id, // Linked to supplier - affects balance
-                    'transaction_category_id' => $cancelCategory->id,
                     'recipient_name' => $supplier->name,
                     'recipient_id' => $supplier->phone,
                     'type' => 'deposit',

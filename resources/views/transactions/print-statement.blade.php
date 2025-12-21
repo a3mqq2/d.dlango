@@ -357,12 +357,11 @@
             <table class="transactions-table">
                 <thead>
                     <tr>
-                        <th width="10%">{{ __('messages.date') }}</th>
-                        <th width="25%">{{ __('messages.description') }}</th>
-                        <th width="15%">{{ __('messages.category') }}</th>
-                        <th width="15%" class="text-end">{{ __('messages.deposits') }}</th>
-                        <th width="15%" class="text-end">{{ __('messages.withdrawals') }}</th>
-                        <th width="20%" class="text-end">{{ __('messages.balance') }}</th>
+                        <th width="12%">{{ __('messages.date') }}</th>
+                        <th width="30%">{{ __('messages.description') }}</th>
+                        <th width="18%" class="text-end">{{ __('messages.deposits') }}</th>
+                        <th width="18%" class="text-end">{{ __('messages.withdrawals') }}</th>
+                        <th width="22%" class="text-end">{{ __('messages.balance') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -384,9 +383,6 @@
                                 @if($transaction->description)
                                     <br><small class="text-muted">{{ $transaction->description }}</small>
                                 @endif
-                            </td>
-                            <td>
-                                <span class="badge">{{ $transaction->category->name }}</span>
                             </td>
                             <td class="text-end">
                                 @if($transaction->type == 'deposit')

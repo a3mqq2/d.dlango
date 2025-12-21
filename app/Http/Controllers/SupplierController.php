@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Supplier;
 use App\Models\Transaction;
 use App\Models\Cashbox;
-use App\Models\TransactionCategory;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -109,7 +108,7 @@ class SupplierController extends Controller
      */
     public function transactions(Request $request, Supplier $supplier)
     {
-        $query = $supplier->transactions()->with(['cashbox', 'category'])->latest();
+        $query = $supplier->transactions()->with(['cashbox'])->latest();
 
         // Filter by type
         if ($request->filled('type')) {
@@ -135,9 +134,8 @@ class SupplierController extends Controller
     public function addTransaction(Supplier $supplier)
     {
         $cashboxes = Cashbox::all();
-        $categories = TransactionCategory::userCategories()->get();
 
-        return view('suppliers.add-transaction', compact('supplier', 'cashboxes', 'categories'));
+        return view('suppliers.add-transaction', compact('supplier', 'cashboxes'));
     }
 
     /**
@@ -147,7 +145,6 @@ class SupplierController extends Controller
     {
         $validated = $request->validate([
             'cashbox_id' => ['required', 'exists:cashboxes,id'],
-            'transaction_category_id' => ['nullable', 'exists:transaction_categories,id'],
             'type' => ['required', 'in:deposit,withdrawal'],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'description' => ['nullable', 'string', 'max:1000'],
@@ -159,7 +156,6 @@ class SupplierController extends Controller
             $transaction = Transaction::create([
                 'cashbox_id' => $validated['cashbox_id'],
                 'supplier_id' => $supplier->id,
-                'transaction_category_id' => $validated['transaction_category_id'],
                 'recipient_name' => $supplier->name,
                 'recipient_id' => $supplier->phone,
                 'type' => $validated['type'],
@@ -195,7 +191,7 @@ class SupplierController extends Controller
      */
     public function accountStatement(Request $request, Supplier $supplier)
     {
-        $query = $supplier->transactions()->with(['cashbox', 'category']);
+        $query = $supplier->transactions()->with(['cashbox']);
 
         // Filter by date range
         $fromDate = $request->from_date ?? now()->startOfMonth()->format('Y-m-d');
@@ -240,7 +236,7 @@ class SupplierController extends Controller
         $fromDate = $request->from_date ?? now()->startOfMonth()->format('Y-m-d');
         $toDate = $request->to_date ?? now()->format('Y-m-d');
 
-        $query = $supplier->transactions()->with(['cashbox', 'category'])
+        $query = $supplier->transactions()->with(['cashbox'])
             ->whereDate('created_at', '>=', $fromDate)
             ->whereDate('created_at', '<=', $toDate);
 

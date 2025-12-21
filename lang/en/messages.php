@@ -1003,4 +1003,17 @@ return [
     'view_all' => 'View All',
     'invoice_num' => 'Invoice',
     "price" => "Price",
+
+    // Keyboard Shortcuts
+    'keyboard_shortcuts' => 'Keyboard Shortcuts',
+    'hold_invoice' => 'Hold Invoice',
+    'cancel_invoice' => 'Cancel Invoice',
+    'next_invoice' => 'Next Invoice',
+    'previous_invoice' => 'Previous Invoice',
+    'increase_qty' => 'Increase Quantity',
+    'decrease_qty' => 'Decrease Quantity',
+    'set_qty' => 'Set Quantity',
+    'remove_last_item' => 'Remove Last Item',
+    'new_invoice' => 'New Invoice',
+    'toggle_payment_method' => 'Toggle Payment Method',
 ];

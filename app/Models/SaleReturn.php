@@ -34,24 +34,24 @@ class SaleReturn extends Model
     }
 
     /**
-     * Generate unique return number
+     * Generate unique return number (numbers only)
      */
     public static function generateReturnNumber(): string
     {
-        $prefix = 'RET-';
         $date = now()->format('Ymd');
         $lastReturn = static::whereDate('created_at', today())
             ->orderBy('id', 'desc')
             ->first();
 
         if ($lastReturn) {
+            // Extract last 4 digits from return number
             $lastNumber = (int) substr($lastReturn->return_number, -4);
             $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
         } else {
             $newNumber = '0001';
         }
 
-        return $prefix . $date . '-' . $newNumber;
+        return $date . $newNumber;
     }
 
     /**

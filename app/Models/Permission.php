@@ -89,7 +89,6 @@ class Permission extends Model
             'finance' => [
                 ['name' => 'finance.cashboxes', 'ar' => 'إدارة الخزائن', 'en' => 'Manage Cashboxes'],
                 ['name' => 'finance.transactions', 'ar' => 'إدارة الحركات المالية', 'en' => 'Manage Transactions'],
-                ['name' => 'finance.categories', 'ar' => 'إدارة تصنيفات الحركات', 'en' => 'Manage Categories'],
                 ['name' => 'finance.statement', 'ar' => 'كشف الحساب', 'en' => 'Account Statement'],
             ],
             'coupons' => [

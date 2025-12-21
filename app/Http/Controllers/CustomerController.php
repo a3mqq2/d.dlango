@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Transaction;
 use App\Models\Cashbox;
-use App\Models\TransactionCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -122,7 +121,7 @@ class CustomerController extends Controller
      */
     public function transactions(Request $request, Customer $customer)
     {
-        $query = $customer->transactions()->with(['cashbox', 'category'])->latest();
+        $query = $customer->transactions()->with(['cashbox'])->latest();
 
         // Filter by type
         if ($request->filled('type')) {
@@ -154,9 +153,8 @@ class CustomerController extends Controller
         }
 
         $cashboxes = Cashbox::all();
-        $categories = TransactionCategory::userCategories()->get();
 
-        return view('customers.add-transaction', compact('customer', 'cashboxes', 'categories'));
+        return view('customers.add-transaction', compact('customer', 'cashboxes'));
     }
 
     /**
@@ -172,7 +170,6 @@ class CustomerController extends Controller
 
         $validated = $request->validate([
             'cashbox_id' => ['required', 'exists:cashboxes,id'],
-            'transaction_category_id' => ['nullable', 'exists:transaction_categories,id'],
             'type' => ['required', 'in:deposit,withdrawal'],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'description' => ['nullable', 'string', 'max:1000'],
@@ -184,7 +181,6 @@ class CustomerController extends Controller
             $transaction = Transaction::create([
                 'cashbox_id' => $validated['cashbox_id'],
                 'customer_id' => $customer->id,
-                'transaction_category_id' => $validated['transaction_category_id'],
                 'recipient_name' => $customer->name,
                 'recipient_id' => $customer->phone,
                 'type' => $validated['type'],
@@ -222,7 +218,7 @@ class CustomerController extends Controller
      */
     public function accountStatement(Request $request, Customer $customer)
     {
-        $query = $customer->transactions()->with(['cashbox', 'category']);
+        $query = $customer->transactions()->with(['cashbox']);
 
         // Filter by date range
         $fromDate = $request->from_date ?? now()->startOfMonth()->format('Y-m-d');
@@ -268,7 +264,7 @@ class CustomerController extends Controller
         $fromDate = $request->from_date ?? now()->startOfMonth()->format('Y-m-d');
         $toDate = $request->to_date ?? now()->format('Y-m-d');
 
-        $query = $customer->transactions()->with(['cashbox', 'category'])
+        $query = $customer->transactions()->with(['cashbox'])
             ->whereDate('created_at', '>=', $fromDate)
             ->whereDate('created_at', '<=', $toDate);
 

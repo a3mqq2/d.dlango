@@ -412,6 +412,132 @@
         min-width: 80px;
         text-align: center;
     }
+    /* Shortcuts Panel */
+    .shortcuts-panel {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        z-index: 9999;
+        max-width: 400px;
+        width: 90%;
+        display: none;
+    }
+    .shortcuts-panel.show {
+        display: block;
+    }
+    .shortcuts-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 9998;
+        display: none;
+    }
+    .shortcuts-overlay.show {
+        display: block;
+    }
+    .shortcuts-header {
+        padding: 1rem;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .shortcuts-body {
+        padding: 1rem;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    .shortcut-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f1f3f4;
+    }
+    .shortcut-item:last-child {
+        border-bottom: none;
+    }
+    .shortcut-key {
+        display: inline-block;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 0.2rem 0.5rem;
+        font-family: monospace;
+        font-size: 0.85rem;
+        font-weight: bold;
+        min-width: 30px;
+        text-align: center;
+    }
+    .btn-help {
+        background: transparent;
+        border: 1px solid #dee2e6;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        transition: all 0.2s;
+    }
+    .btn-help:hover {
+        background: #b65f7a;
+        border-color: #b65f7a;
+        color: white;
+    }
+    /* Returns Modal */
+    .return-item {
+        padding: 0.75rem;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+    }
+    .return-item:hover {
+        background: #f8f9fa;
+    }
+    .return-qty-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .return-qty-controls button {
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+    .return-qty-controls input {
+        width: 60px;
+        text-align: center;
+    }
+    .btn-return {
+        background: transparent;
+        border: 1px solid #dee2e6;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        transition: all 0.2s;
+    }
+    .btn-return:hover {
+        background: #dc3545;
+        border-color: #dc3545;
+        color: white;
+    }
 </style>
 @endpush
 
@@ -435,10 +561,18 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <button type="button" class="btn btn-outline-primary w-100" id="refreshProducts">
-                                <i class="ti ti-refresh me-1"></i>
-                                {{ __('messages.refresh') }}
-                            </button>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-primary flex-fill" id="refreshProducts">
+                                    <i class="ti ti-refresh me-1"></i>
+                                    {{ __('messages.refresh') }}
+                                </button>
+                                <button type="button" class="btn-return" id="showReturns" title="{{ __('messages.returns') }}">
+                                    <i class="ti ti-receipt-refund"></i>
+                                </button>
+                                <button type="button" class="btn-help" id="showShortcuts" title="{{ __('messages.keyboard_shortcuts') }}">
+                                    <i class="ti ti-keyboard"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -696,6 +830,168 @@
                     {{ __('messages.save') }}
                 </button>
             </div>
+        </div>
+    </div>
+</div>
+
+{{-- Returns Modal --}}
+<div class="modal fade" id="returnsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="ti ti-receipt-refund me-2"></i>
+                    {{ __('messages.create_return') }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                {{-- Search Invoice --}}
+                <div id="returnSearchSection">
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('messages.invoice_number') }} <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="returnInvoiceNumber" placeholder="{{ __('messages.enter_invoice_number') }}" dir="ltr">
+                            <button type="button" class="btn btn-primary" id="searchInvoiceBtn">
+                                <i class="ti ti-search me-1"></i>
+                                {{ __('messages.search') }}
+                            </button>
+                        </div>
+                        <div id="returnSearchMessage" class="small mt-2 d-none"></div>
+                    </div>
+                </div>
+
+                {{-- Sale Info --}}
+                <div id="returnSaleInfo" class="d-none">
+                    <div class="card bg-light border-0 mb-3">
+                        <div class="card-body py-2">
+                            <div class="row text-sm">
+                                <div class="col-6">
+                                    <small class="text-muted">{{ __('messages.invoice_number') }}:</small>
+                                    <strong id="returnSaleInvoice" class="d-block" dir="ltr"></strong>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">{{ __('messages.customer') }}:</small>
+                                    <strong id="returnSaleCustomer" class="d-block"></strong>
+                                </div>
+                                <div class="col-6 mt-2">
+                                    <small class="text-muted">{{ __('messages.date') }}:</small>
+                                    <strong id="returnSaleDate" class="d-block" dir="ltr"></strong>
+                                </div>
+                                <div class="col-6 mt-2">
+                                    <small class="text-muted">{{ __('messages.total') }}:</small>
+                                    <strong id="returnSaleTotal" class="d-block" dir="ltr"></strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Items to Return --}}
+                    <h6 class="mb-3">{{ __('messages.items_to_return') }}</h6>
+                    <div id="returnItemsList" class="mb-3" style="max-height: 300px; overflow-y: auto;">
+                        {{-- Items loaded via JavaScript --}}
+                    </div>
+
+                    {{-- Return Options --}}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">{{ __('messages.refund_method') }} <span class="text-danger">*</span></label>
+                            <div class="d-flex gap-2">
+                                <input type="radio" class="btn-check" name="returnRefundMethod" id="refundCash" value="cash" checked>
+                                <label class="btn btn-outline-success flex-fill" for="refundCash">
+                                    <i class="ti ti-cash me-1"></i>
+                                    {{ __('messages.cash') }}
+                                </label>
+                                <input type="radio" class="btn-check" name="returnRefundMethod" id="refundCredit" value="credit">
+                                <label class="btn btn-outline-warning flex-fill" for="refundCredit">
+                                    <i class="ti ti-credit-card me-1"></i>
+                                    {{ __('messages.credit') }}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="returnCashboxSection">
+                            <label class="form-label">{{ __('messages.cashbox') }} <span class="text-danger">*</span></label>
+                            <select class="form-select" id="returnCashbox">
+                                @foreach($cashboxes as $cashbox)
+                                    <option value="{{ $cashbox->id }}">{{ $cashbox->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">{{ __('messages.reason') }}</label>
+                            <input type="text" class="form-control" id="returnReason" placeholder="{{ __('messages.enter_return_reason') }}">
+                        </div>
+                    </div>
+
+                    {{-- Return Total --}}
+                    <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                        <h5 class="mb-0">{{ __('messages.return_total') }}</h5>
+                        <h4 class="mb-0 text-danger" id="returnTotal" dir="ltr">0.00 {{ __('messages.currency') }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('messages.cancel') }}</button>
+                <button type="button" class="btn btn-danger" id="processReturnBtn" disabled>
+                    <i class="ti ti-receipt-refund me-1"></i>
+                    {{ __('messages.process_return') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Shortcuts Panel --}}
+<div class="shortcuts-overlay" id="shortcutsOverlay"></div>
+<div class="shortcuts-panel" id="shortcutsPanel">
+    <div class="shortcuts-header">
+        <h6 class="mb-0"><i class="ti ti-keyboard me-2"></i>{{ __('messages.keyboard_shortcuts') }}</h6>
+        <button type="button" class="btn-close" id="closeShortcuts"></button>
+    </div>
+    <div class="shortcuts-body">
+        <div class="shortcut-item">
+            <span>{{ __('messages.complete_sale') }}</span>
+            <span class="shortcut-key">Space</span>
+        </div>
+        <div class="shortcut-item">
+            <span>{{ __('messages.hold_invoice') }}</span>
+            <span class="shortcut-key">H</span>
+        </div>
+        <div class="shortcut-item">
+            <span>{{ __('messages.cancel_invoice') }}</span>
+            <span class="shortcut-key">Esc</span>
+        </div>
+        <div class="shortcut-item">
+            <span>{{ __('messages.next_invoice') }}</span>
+            <span class="shortcut-key">←</span>
+        </div>
+        <div class="shortcut-item">
+            <span>{{ __('messages.previous_invoice') }}</span>
+            <span class="shortcut-key">→</span>
+        </div>
+        <div class="shortcut-item">
+            <span>{{ __('messages.increase_qty') }}</span>
+            <span class="shortcut-key">↑</span>
+        </div>
+        <div class="shortcut-item">
+            <span>{{ __('messages.decrease_qty') }}</span>
+            <span class="shortcut-key">↓</span>
+        </div>
+        <div class="shortcut-item">
+            <span>{{ __('messages.set_qty') }}</span>
+            <span class="shortcut-key">1-9</span>
+        </div>
+        <div class="shortcut-item">
+            <span>{{ __('messages.remove_last_item') }}</span>
+            <span class="shortcut-key">Del</span>
+        </div>
+        <div class="shortcut-item">
+            <span>{{ __('messages.add_customer') }}</span>
+            <span class="shortcut-key">=</span>
+        </div>
+        <div class="shortcut-item">
+            <span>{{ __('messages.toggle_payment_method') }}</span>
+            <span class="shortcut-key">T</span>
         </div>
     </div>
 </div>
@@ -1772,17 +2068,31 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Escape = Clear Search (works always)
+        // Escape = Clear search first, then cancel/delete current invoice if search is empty
         if (e.key === 'Escape') {
+            e.preventDefault();
             if (productSearch.value !== '') {
+                // First: clear search
                 productSearch.value = '';
                 renderProducts(products);
+            } else if (cart.length > 0) {
+                // Second: cancel current invoice (clear cart)
+                cart = [];
+                appliedCoupon = null;
+                couponDiscount = 0;
+                document.getElementById('discountInput').value = 0;
+                document.getElementById('appliedCoupon').classList.add('d-none');
+                invoices[currentInvoiceIndex] = { cart: [], customerId: null, discount: 0, discountType: 'fixed', coupon: null, couponDiscount: 0 };
+                renderCart();
+            } else if (invoices.length > 1) {
+                // Third: delete empty invoice if there are multiple
+                deleteInvoice(currentInvoiceIndex, e);
             }
             focusSearch();
         }
 
-        // + = Open Add Customer Modal
-        if (e.key === '+') {
+        // = Open Add Customer Modal
+        if (e.key === '=') {
             e.preventDefault();
             document.getElementById('newCustomerName').value = '';
             document.getElementById('newCustomerPhone').value = '';
@@ -1811,11 +2121,307 @@ document.addEventListener('DOMContentLoaded', function() {
                 holdInvoice();
                 return;
             }
+
+            // T = Toggle payment method (Cash → Credit → Bank Transfer → Cash...)
+            if (e.key.toLowerCase() === 't') {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                const cashRadio = document.getElementById('payCash');
+                const creditRadio = document.getElementById('payCredit');
+                const bankTransferRadio = document.getElementById('typeBankTransfer');
+                const bankAccountSection = document.getElementById('bankAccountSection');
+
+                // Current state: check which is selected
+                const isCash = cashRadio.checked && !bankTransferRadio.checked;
+                const isCredit = creditRadio.checked;
+                const isBankTransfer = bankTransferRadio.checked;
+
+                if (isCash) {
+                    // Cash → Credit (if allowed) or Bank Transfer
+                    if (!creditRadio.disabled) {
+                        creditRadio.checked = true;
+                        bankTransferRadio.checked = false;
+                        bankAccountSection.style.display = 'none';
+                    } else {
+                        // Skip credit, go to bank transfer
+                        cashRadio.checked = true;
+                        bankTransferRadio.checked = true;
+                        bankAccountSection.style.display = 'block';
+                    }
+                } else if (isCredit) {
+                    // Credit → Bank Transfer
+                    cashRadio.checked = true;
+                    creditRadio.checked = false;
+                    bankTransferRadio.checked = true;
+                    bankAccountSection.style.display = 'block';
+                } else if (isBankTransfer) {
+                    // Bank Transfer → Cash
+                    cashRadio.checked = true;
+                    bankTransferRadio.checked = false;
+                    bankAccountSection.style.display = 'none';
+                    document.getElementById('typeCash').checked = true;
+                }
+
+                focusSearch();
+                return;
+            }
         }
     }, true); // true = capture phase to intercept before input
 
     // Initial load
     loadProducts();
+
+    // ===== SHORTCUTS PANEL =====
+    const shortcutsPanel = document.getElementById('shortcutsPanel');
+    const shortcutsOverlay = document.getElementById('shortcutsOverlay');
+
+    function showShortcutsPanel() {
+        shortcutsPanel.classList.add('show');
+        shortcutsOverlay.classList.add('show');
+    }
+
+    function hideShortcutsPanel() {
+        shortcutsPanel.classList.remove('show');
+        shortcutsOverlay.classList.remove('show');
+        focusSearch();
+    }
+
+    document.getElementById('showShortcuts').addEventListener('click', showShortcutsPanel);
+    document.getElementById('closeShortcuts').addEventListener('click', hideShortcutsPanel);
+    shortcutsOverlay.addEventListener('click', hideShortcutsPanel);
+
+    // ===== RETURNS FUNCTIONALITY =====
+    const returnsModal = new bootstrap.Modal(document.getElementById('returnsModal'));
+    let currentReturnSale = null;
+    let returnItems = [];
+
+    // Show returns modal
+    document.getElementById('showReturns').addEventListener('click', function() {
+        resetReturnModal();
+        returnsModal.show();
+        setTimeout(() => document.getElementById('returnInvoiceNumber').focus(), 300);
+    });
+
+    // Reset return modal
+    function resetReturnModal() {
+        currentReturnSale = null;
+        returnItems = [];
+        document.getElementById('returnInvoiceNumber').value = '';
+        document.getElementById('returnSearchMessage').classList.add('d-none');
+        document.getElementById('returnSaleInfo').classList.add('d-none');
+        document.getElementById('returnSearchSection').classList.remove('d-none');
+        document.getElementById('returnItemsList').innerHTML = '';
+        document.getElementById('returnReason').value = '';
+        document.getElementById('refundCash').checked = true;
+        document.getElementById('returnCashboxSection').style.display = 'block';
+        document.getElementById('processReturnBtn').disabled = true;
+        updateReturnTotal();
+    }
+
+    // Search invoice
+    document.getElementById('searchInvoiceBtn').addEventListener('click', searchInvoiceForReturn);
+    document.getElementById('returnInvoiceNumber').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            searchInvoiceForReturn();
+        }
+    });
+
+    async function searchInvoiceForReturn() {
+        const invoiceNumber = document.getElementById('returnInvoiceNumber').value.trim();
+        if (!invoiceNumber) return;
+
+        const searchBtn = document.getElementById('searchInvoiceBtn');
+        searchBtn.disabled = true;
+        searchBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+        try {
+            const response = await fetch('{{ route("returns.search-sale") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ invoice_number: invoiceNumber })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                currentReturnSale = data.sale;
+                returnItems = data.items.map(item => ({
+                    ...item,
+                    return_quantity: 0
+                }));
+
+                // Show sale info
+                document.getElementById('returnSaleInvoice').textContent = data.sale.invoice_number;
+                document.getElementById('returnSaleCustomer').textContent = data.sale.customer;
+                document.getElementById('returnSaleDate').textContent = data.sale.sale_date;
+                document.getElementById('returnSaleTotal').textContent = parseFloat(data.sale.total_amount).toFixed(2) + ' {{ __("messages.currency") }}';
+
+                // Render items
+                renderReturnItems();
+
+                // Show sale info section
+                document.getElementById('returnSaleInfo').classList.remove('d-none');
+                showReturnMessage('{{ __("messages.sale_found") }}', 'success');
+            } else {
+                showReturnMessage(data.message, 'danger');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showReturnMessage('{{ __("messages.error_occurred") }}', 'danger');
+        } finally {
+            searchBtn.disabled = false;
+            searchBtn.innerHTML = '<i class="ti ti-search me-1"></i>{{ __("messages.search") }}';
+        }
+    }
+
+    function showReturnMessage(message, type) {
+        const msgEl = document.getElementById('returnSearchMessage');
+        msgEl.textContent = message;
+        msgEl.className = `small mt-2 text-${type}`;
+        msgEl.classList.remove('d-none');
+    }
+
+    function renderReturnItems() {
+        const container = document.getElementById('returnItemsList');
+        container.innerHTML = returnItems.map((item, index) => `
+            <div class="return-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0">${item.name}</h6>
+                        <small class="text-muted">${item.code} | {{ __('messages.price') }}: ${parseFloat(item.unit_price).toFixed(2)}</small>
+                        <br>
+                        <small class="text-muted">{{ __('messages.purchased') }}: ${item.quantity} | {{ __('messages.returnable') }}: <span class="text-success fw-bold">${item.returnable_quantity}</span></small>
+                    </div>
+                    <div class="return-qty-controls">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="updateReturnQty(${index}, -1)">
+                            <i class="ti ti-minus"></i>
+                        </button>
+                        <input type="number" class="form-control form-control-sm" value="${item.return_quantity}"
+                               min="0" max="${item.returnable_quantity}"
+                               onchange="setReturnQty(${index}, this.value)">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="updateReturnQty(${index}, 1)">
+                            <i class="ti ti-plus"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger ms-2" onclick="setReturnQty(${index}, ${item.returnable_quantity})" title="{{ __('messages.return_all') }}">
+                            <i class="ti ti-arrow-back-up"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    window.updateReturnQty = function(index, delta) {
+        const item = returnItems[index];
+        const newQty = item.return_quantity + delta;
+        if (newQty >= 0 && newQty <= item.returnable_quantity) {
+            item.return_quantity = newQty;
+            renderReturnItems();
+            updateReturnTotal();
+        }
+    };
+
+    window.setReturnQty = function(index, value) {
+        const qty = parseInt(value) || 0;
+        const item = returnItems[index];
+        if (qty >= 0 && qty <= item.returnable_quantity) {
+            item.return_quantity = qty;
+            renderReturnItems();
+            updateReturnTotal();
+        }
+    };
+
+    function updateReturnTotal() {
+        const total = returnItems.reduce((sum, item) => sum + (item.unit_price * item.return_quantity), 0);
+        document.getElementById('returnTotal').textContent = total.toFixed(2) + ' {{ __("messages.currency") }}';
+
+        // Enable/disable process button
+        const hasItemsToReturn = returnItems.some(item => item.return_quantity > 0);
+        document.getElementById('processReturnBtn').disabled = !hasItemsToReturn;
+    }
+
+    // Toggle cashbox visibility based on refund method
+    document.querySelectorAll('input[name="returnRefundMethod"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const cashboxSection = document.getElementById('returnCashboxSection');
+            cashboxSection.style.display = this.value === 'cash' ? 'block' : 'none';
+        });
+    });
+
+    // Process return
+    document.getElementById('processReturnBtn').addEventListener('click', async function() {
+        if (!currentReturnSale) return;
+
+        const itemsToReturn = returnItems
+            .filter(item => item.return_quantity > 0)
+            .map(item => ({
+                sale_item_id: item.id,
+                quantity: item.return_quantity
+            }));
+
+        if (itemsToReturn.length === 0) {
+            alert('{{ __("messages.select_items_to_return") }}');
+            return;
+        }
+
+        const refundMethod = document.querySelector('input[name="returnRefundMethod"]:checked').value;
+        const cashboxId = document.getElementById('returnCashbox').value;
+        const reason = document.getElementById('returnReason').value.trim();
+
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{{ __("messages.processing") }}...';
+
+        try {
+            const response = await fetch('{{ route("returns.store") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    sale_id: currentReturnSale.id,
+                    cashbox_id: refundMethod === 'cash' ? cashboxId : null,
+                    refund_method: refundMethod,
+                    reason: reason,
+                    items: itemsToReturn
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Show success and print receipt
+                alert('{{ __("messages.return_completed") }}\n{{ __("messages.return_number") }}: ' + data.return_number);
+
+                // Open return receipt
+                window.open(`{{ url('returns') }}/${data.return.id}/receipt`, '_blank');
+
+                // Close modal and refresh products
+                returnsModal.hide();
+                loadProducts();
+                focusSearch();
+            } else {
+                alert(data.message || '{{ __("messages.error_occurred") }}');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('{{ __("messages.error_occurred") }}');
+        } finally {
+            this.disabled = false;
+            this.innerHTML = '<i class="ti ti-receipt-refund me-1"></i>{{ __("messages.process_return") }}';
+        }
+    });
+
+    // Refocus after returns modal closes
+    document.getElementById('returnsModal').addEventListener('hidden.bs.modal', function() {
+        focusSearch();
+    });
 });
 </script>
 @endpush

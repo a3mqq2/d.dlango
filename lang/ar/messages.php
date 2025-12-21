@@ -858,6 +858,13 @@ return [
     'original_invoice' => 'الفاتورة الأصلية',
     'sale_date' => 'تاريخ البيع',
     'return_refund' => 'استرداد مرتجع',
+    'create_return' => 'إنشاء مرتجع',
+    'items_to_return' => 'الأصناف للإرجاع',
+    'sale_found' => 'تم العثور على الفاتورة',
+    'return_all' => 'إرجاع الكل',
+    'select_items_to_return' => 'الرجاء تحديد الأصناف للإرجاع',
+    'purchased' => 'المشترى',
+    'enter_return_reason' => 'أدخل سبب الإرجاع (اختياري)',
 
     // Coupons
     'coupons' => 'الكوبونات',
@@ -1022,4 +1029,17 @@ return [
     'invoice_num' => 'فاتورة',
     'refresh' => 'اعادة تحميل',
     'add_transaction_category' => 'اضافة تصنيف مالي جديد',
+
+    // Keyboard Shortcuts
+    'keyboard_shortcuts' => 'اختصارات لوحة المفاتيح',
+    'hold_invoice' => 'تعليق الفاتورة',
+    'cancel_invoice' => 'إلغاء الفاتورة',
+    'next_invoice' => 'الفاتورة التالية',
+    'previous_invoice' => 'الفاتورة السابقة',
+    'increase_qty' => 'زيادة الكمية',
+    'decrease_qty' => 'إنقاص الكمية',
+    'set_qty' => 'تحديد الكمية',
+    'remove_last_item' => 'حذف آخر منتج',
+    'new_invoice' => 'فاتورة جديدة',
+    'toggle_payment_method' => 'تبديل طريقة الدفع',
 ];

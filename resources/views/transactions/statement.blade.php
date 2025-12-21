@@ -37,19 +37,6 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label fw-semibold">
-                                {{ __('messages.transaction_category') }}
-                            </label>
-                            <select name="category_id" class="form-select">
-                                <option value="">{{ __('messages.all_categories') }}</option>
-                                @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                                        {{ $category->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
                         <div class="col-md-2">
                             <label class="form-label fw-semibold">
                                 {{ __('messages.from_date') }}
@@ -149,12 +136,11 @@
                             <table class="table table-hover align-middle">
                                 <thead class="table-light">
                                     <tr>
-                                        <th width="10%">{{ __('messages.date') }}</th>
-                                        <th width="25%">{{ __('messages.description') }}</th>
-                                        <th width="15%">{{ __('messages.category') }}</th>
-                                        <th width="15%" class="text-end">{{ __('messages.deposits') }}</th>
-                                        <th width="15%" class="text-end">{{ __('messages.withdrawals') }}</th>
-                                        <th width="20%" class="text-end">{{ __('messages.balance') }}</th>
+                                        <th width="12%">{{ __('messages.date') }}</th>
+                                        <th width="30%">{{ __('messages.description') }}</th>
+                                        <th width="18%" class="text-end">{{ __('messages.deposits') }}</th>
+                                        <th width="18%" class="text-end">{{ __('messages.withdrawals') }}</th>
+                                        <th width="22%" class="text-end">{{ __('messages.balance') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -178,11 +164,6 @@
                                                         <br><small class="text-muted">{{ $transaction->description }}</small>
                                                     @endif
                                                 </div>
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-light text-dark border">
-                                                    {{ $transaction->category->name }}
-                                                </span>
                                             </td>
                                             <td class="text-end">
                                                 @if($transaction->type == 'deposit')
@@ -212,7 +193,7 @@
                                 </tbody>
                                 <tfoot class="table-light">
                                     <tr class="fw-bold">
-                                        <td colspan="3" class="text-end">{{ __('messages.totals') }}</td>
+                                        <td colspan="2" class="text-end">{{ __('messages.totals') }}</td>
                                         <td class="text-end text-success" dir="ltr">
                                             {{ number_format($totalDeposits, 2) }}
                                         </td>
@@ -227,7 +208,7 @@
                                         </td>
                                     </tr>
                                     <tr class="fw-bold">
-                                        <td colspan="3" class="text-end">{{ __('messages.net_change') }}</td>
+                                        <td colspan="2" class="text-end">{{ __('messages.net_change') }}</td>
                                         <td colspan="3" class="text-end">
                                             <span class="text-{{ ($closingBalance - $openingBalance) > 0 ? 'success' : (($closingBalance - $openingBalance) < 0 ? 'danger' : 'secondary') }}" dir="ltr">
                                                 {{ ($closingBalance - $openingBalance) > 0 ? '+' : '' }}

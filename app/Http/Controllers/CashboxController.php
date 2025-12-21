@@ -43,14 +43,8 @@ class CashboxController extends Controller
 
         // إنشاء حركة إيداع للرصيد الافتتاحي إذا كان أكبر من صفر
         if ($validated['opening_balance'] > 0) {
-            // نحتاج إلى تصنيف افتراضي للرصيد الافتتاحي
-            $openingCategory = \App\Models\TransactionCategory::firstOrCreate(
-                ['name' => __('messages.opening_balance')]
-            );
-
             Transaction::create([
                 'cashbox_id' => $cashbox->id,
-                'transaction_category_id' => $openingCategory->id,
                 'recipient_name' => __('messages.system'),
                 'type' => 'deposit',
                 'amount' => $validated['opening_balance'],
@@ -66,7 +60,6 @@ class CashboxController extends Controller
     {
         // جلب آخر 10 حركات مالية للخزينة
         $recentTransactions = Transaction::where('cashbox_id', $cashbox->id)
-            ->with('category')
             ->latest()
             ->limit(10)
             ->get();

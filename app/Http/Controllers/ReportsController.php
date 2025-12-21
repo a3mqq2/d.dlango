@@ -142,13 +142,12 @@ class ReportsController extends Controller
         return [
             'total_expenses' => (float) $expenses->sum('amount'),
             'total_other_income' => (float) $deposits->sum('amount'),
-            'expenses_by_category' => Transaction::whereBetween('created_at', [$start, $end])
+            'expenses_list' => Transaction::whereBetween('created_at', [$start, $end])
                 ->where('type', 'withdrawal')
                 ->whereNull('supplier_id')
                 ->whereNull('customer_id')
-                ->with('category')
-                ->select('transaction_category_id', DB::raw('SUM(amount) as total'))
-                ->groupBy('transaction_category_id')
+                ->select('recipient_name', 'description', DB::raw('SUM(amount) as total'))
+                ->groupBy('recipient_name', 'description')
                 ->get(),
         ];
     }

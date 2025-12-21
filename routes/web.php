@@ -7,7 +7,6 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\CashboxController;
 use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\TransactionCategoryController;
 use App\Http\Controllers\PurchaseInvoiceController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\CustomerController;
@@ -99,9 +98,6 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:finance.statement')->group(function () {
         Route::get('account-statement', [TransactionController::class, 'accountStatement'])->name('transactions.statement');
         Route::get('account-statement/print', [TransactionController::class, 'printStatement'])->name('transactions.print-statement');
-    });
-    Route::middleware('permission:finance.categories')->group(function () {
-        Route::resource('transaction-categories', TransactionCategoryController::class)->except(['create', 'edit', 'show']);
     });
 
     // Inventory Management

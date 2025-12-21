@@ -55,10 +55,24 @@ class PurchaseInvoice extends Model
         };
     }
 
+    /**
+     * Generate unique invoice number (numbers only)
+     */
     public static function generateInvoiceNumber(): string
     {
-        $lastInvoice = self::latest('id')->first();
-        $nextNumber = $lastInvoice ? (intval(substr($lastInvoice->invoice_number, 3)) + 1) : 1;
-        return 'INV' . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+        $date = date('Ymd');
+        $lastInvoice = static::whereDate('created_at', today())
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if ($lastInvoice) {
+            // Extract last 4 digits from invoice number
+            $lastNumber = (int) substr($lastInvoice->invoice_number, -4);
+            $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+        } else {
+            $newNumber = '0001';
+        }
+
+        return $date . $newNumber;
     }
 }

@@ -193,9 +193,6 @@
                         <td>{{ $transaction->created_at->format('Y-m-d H:i') }}</td>
                         <td>
                             {{ $transaction->description ?? '-' }}
-                            @if($transaction->category)
-                                <br><small style="color: #666;">{{ $transaction->category->name }}</small>
-                            @endif
                         </td>
                         <td class="text-success">
                             {{ $transaction->type == 'deposit' ? number_format($transaction->amount, 2) : '-' }}

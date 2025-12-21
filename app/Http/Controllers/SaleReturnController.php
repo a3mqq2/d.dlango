@@ -9,7 +9,6 @@ use App\Models\Cashbox;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Transaction;
-use App\Models\TransactionCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -205,11 +204,9 @@ class SaleReturnController extends Controller
                 $cashbox->decrement('current_balance', $totalAmount);
 
                 // Create withdrawal transaction for cashbox records (without customer_id)
-                $returnCategory = TransactionCategory::getSystemCategory(__('messages.sales_returns'));
                 Transaction::create([
                     'cashbox_id' => $cashbox->id,
                     'customer_id' => null, // Not linked to customer - cash refund is immediate
-                    'transaction_category_id' => $returnCategory->id,
                     'recipient_name' => $customer->name,
                     'recipient_id' => $customer->phone,
                     'type' => 'withdrawal',
@@ -218,15 +215,12 @@ class SaleReturnController extends Controller
                 ]);
             } else {
                 // Credit refund - affects customer balance (we owe customer or reduce their debt)
-                $creditReturnCategory = TransactionCategory::getSystemCategory(__('messages.credit_return'));
-
                 // Use default cashbox for tracking credit transactions
                 $defaultCashbox = Cashbox::first();
 
                 Transaction::create([
                     'cashbox_id' => $defaultCashbox->id,
                     'customer_id' => $customer->id, // Linked to customer - credit affects balance
-                    'transaction_category_id' => $creditReturnCategory->id,
                     'recipient_name' => $customer->name,
                     'recipient_id' => $customer->phone,
                     'type' => 'deposit', // Deposit to customer account (reduces their debt or gives credit)

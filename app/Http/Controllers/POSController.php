@@ -9,7 +9,6 @@ use App\Models\ProductVariant;
 use App\Models\Customer;
 use App\Models\Cashbox;
 use App\Models\Transaction;
-use App\Models\TransactionCategory;
 use App\Models\Coupon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -285,11 +284,9 @@ class POSController extends Controller
                 $cashbox->increment('current_balance', $paidAmount);
 
                 // Create deposit transaction for cashbox records (without customer_id)
-                $saleCategory = TransactionCategory::getSystemCategory(__('messages.sales_revenue'));
                 Transaction::create([
                     'cashbox_id' => $cashbox->id,
                     'customer_id' => null, // Not linked to customer - cash payment is immediate
-                    'transaction_category_id' => $saleCategory->id,
                     'recipient_name' => $customer->name,
                     'recipient_id' => $customer->phone,
                     'type' => 'deposit',
@@ -298,15 +295,12 @@ class POSController extends Controller
                 ]);
             } elseif ($validated['payment_method'] === 'credit') {
                 // Credit payment - affects customer balance (customer owes us)
-                $creditCategory = TransactionCategory::getSystemCategory(__('messages.credit_sale'));
-
                 // Use default cashbox for tracking credit transactions
                 $defaultCashbox = Cashbox::first();
 
                 Transaction::create([
                     'cashbox_id' => $defaultCashbox->id,
                     'customer_id' => $customer->id, // Linked to customer - credit affects balance
-                    'transaction_category_id' => $creditCategory->id,
                     'recipient_name' => $customer->name,
                     'recipient_id' => $customer->phone,
                     'type' => 'withdrawal', // We "withdraw" goods to give to customer on credit

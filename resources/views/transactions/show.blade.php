@@ -50,25 +50,6 @@
                         </div>
                     </div>
 
-                    {{-- Category --}}
-                    <div class="col-md-6">
-                        <div class="card bg-light border-0">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <div class="flex-shrink-0">
-                                        <div class="avatar avatar-sm bg-light-primary rounded">
-                                            <i class="ti ti-tag text-primary"></i>
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1 ms-3 text-start">
-                                        <small class="text-muted d-block">{{ __('messages.category') }}</small>
-                                        <h6 class="mb-0">{{ $transaction->category->name }}</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     {{-- Recipient Name --}}
                     <div class="col-md-6">
                         <div class="card bg-light border-0">

@@ -74,24 +74,24 @@ class Sale extends Model
     }
 
     /**
-     * Generate unique invoice number
+     * Generate unique invoice number (numbers only)
      */
     public static function generateInvoiceNumber(): string
     {
-        $prefix = 'SL';
         $date = date('Ymd');
         $lastInvoice = static::whereDate('created_at', today())
             ->orderBy('id', 'desc')
             ->first();
 
         if ($lastInvoice) {
+            // Extract last 4 digits from invoice number
             $lastNumber = (int) substr($lastInvoice->invoice_number, -4);
             $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
         } else {
             $newNumber = '0001';
         }
 
-        return $prefix . $date . $newNumber;
+        return $date . $newNumber;
     }
 
     /**

@@ -155,7 +155,7 @@
             </div>
             <div class="card-body p-0">
                 @php
-                    $recentTransactions = $customer->transactions()->with(['cashbox', 'category'])->latest()->take(5)->get();
+                    $recentTransactions = $customer->transactions()->with(['cashbox'])->latest()->take(5)->get();
                 @endphp
 
                 @if($recentTransactions->count() > 0)

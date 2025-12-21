@@ -164,11 +164,16 @@ class SupplierController extends Controller
             ]);
 
             // Update cashbox balance
+            // For suppliers: deposit = paying supplier (withdraw from cashbox)
+            //                withdrawal = credit purchase (increases our debt)
             $cashbox = Cashbox::find($validated['cashbox_id']);
             if ($validated['type'] === 'deposit') {
-                $cashbox->current_balance += $validated['amount'];
-            } else {
+                // Paying supplier = withdraw from cashbox
                 $cashbox->current_balance -= $validated['amount'];
+            } else {
+                // Withdrawal = credit purchase, increases our debt to supplier
+                // No cash movement, so no cashbox effect
+                // (The debt is tracked in supplier balance)
             }
             $cashbox->save();
 

@@ -217,7 +217,15 @@ class POSController extends Controller
             }
 
             $totalAmount = $subtotal - $discountAmount - $couponDiscount;
-            $paidAmount = $validated['paid_amount'] ?? ($validated['payment_method'] === 'cash' ? $totalAmount : 0);
+
+            // For cash payments, always use total amount (after discount)
+            // For credit, paid amount is 0
+            if ($validated['payment_method'] === 'cash') {
+                $paidAmount = $totalAmount;
+            } else {
+                $paidAmount = 0;
+            }
+
             $remainingAmount = $totalAmount - $paidAmount;
 
             // Create sale

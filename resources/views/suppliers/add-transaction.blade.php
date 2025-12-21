@@ -56,7 +56,7 @@
                                 <label class="btn btn-outline-success w-100 py-3" for="type_deposit">
                                     <i class="ti ti-arrow-down-left fs-3 d-block mb-2"></i>
                                     <strong>{{ __('messages.deposit') }}</strong>
-                                    <small class="d-block text-muted mt-1">{{ __('messages.payment_from_supplier') }}</small>
+                                    <small class="d-block text-muted mt-1">{{ __('messages.payment_to_supplier') }}</small>
                                 </label>
                             </div>
                             <div class="col-md-6">
@@ -64,7 +64,7 @@
                                 <label class="btn btn-outline-danger w-100 py-3" for="type_withdrawal">
                                     <i class="ti ti-arrow-up-right fs-3 d-block mb-2"></i>
                                     <strong>{{ __('messages.withdrawal') }}</strong>
-                                    <small class="d-block text-muted mt-1">{{ __('messages.payment_to_supplier') }}</small>
+                                    <small class="d-block text-muted mt-1">{{ __('messages.credit_purchase') }}</small>
                                 </label>
                             </div>
                         </div>

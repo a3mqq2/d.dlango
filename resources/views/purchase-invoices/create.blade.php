@@ -95,10 +95,16 @@
                         <i class="ti ti-package me-2"></i>
                         {{ __('messages.products') }}
                     </h5>
-                    <button type="button" class="btn btn-sm btn-primary" id="addProductBtn">
-                        <i class="ti ti-plus me-1"></i>
-                        {{ __('messages.add_product') }}
-                    </button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-danger" id="clearDraftBtn" title="مسح المسودة">
+                            <i class="ti ti-trash me-1"></i>
+                            مسح المسودة
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary" id="addProductBtn">
+                            <i class="ti ti-plus me-1"></i>
+                            {{ __('messages.add_product') }}
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body p-4">
                     <div id="productsContainer">
@@ -263,6 +269,52 @@
     </div>
 </form>
 
+{{-- Print Barcode Modal --}}
+<div class="modal fade" id="printBarcodeModal" tabindex="-1" aria-labelledby="printBarcodeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="printBarcodeModalLabel">
+                    <i class="ti ti-printer me-2"></i>
+                    {{ __('messages.print_barcode') }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        {{ __('messages.product_code') }}
+                    </label>
+                    <input type="text" id="barcode_code_display" class="form-control" dir="ltr" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        {{ __('messages.product_name') }}
+                    </label>
+                    <input type="text" id="barcode_name_display" class="form-control" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        {{ __('messages.number_of_copies') }}
+                        <span class="text-danger">*</span>
+                    </label>
+                    <input type="number" id="barcode_copies" class="form-control" min="1" value="1" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="ti ti-x me-1"></i>
+                    {{ __('messages.cancel') }}
+                </button>
+                <button type="button" class="btn btn-primary" id="confirmPrintBarcodeBtn">
+                    <i class="ti ti-printer me-1"></i>
+                    {{ __('messages.print') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Add Supplier Modal --}}
 <div class="modal fade" id="addSupplierModal" tabindex="-1" aria-labelledby="addSupplierModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -315,12 +367,179 @@ document.addEventListener('DOMContentLoaded', function() {
     const productsContainer = document.getElementById('productsContainer');
     const emptyState = document.getElementById('emptyProductsState');
     const addProductBtn = document.getElementById('addProductBtn');
+    const CACHE_KEY = 'purchase_invoice_draft';
 
     console.log('Add Product Button:', addProductBtn);
 
     if (!addProductBtn) {
         console.error('addProductBtn not found!');
         return;
+    }
+
+    // ========== Auto-save functionality ==========
+    function saveToCache() {
+        const formData = {
+            invoice_date: document.querySelector('input[name="invoice_date"]').value,
+            supplier_id: document.querySelector('#supplier_select').value,
+            payment_method: document.querySelector('input[name="payment_method"]:checked')?.value,
+            cashbox_id: document.querySelector('#cashbox_select').value,
+            notes: document.querySelector('textarea[name="notes"]').value,
+            products: []
+        };
+
+        // Save all products
+        document.querySelectorAll('.product-item').forEach((productEl) => {
+            const productIndex = productEl.getAttribute('data-product-index');
+            const productType = productEl.querySelector('.product-type-radio:checked').value;
+
+            const product = {
+                index: productIndex,
+                type: productType,
+                code: productEl.querySelector('.product-code').value,
+                name: productEl.querySelector(`input[name="products[${productIndex}][name]"]`).value,
+                sku: productEl.querySelector(`input[name="products[${productIndex}][sku]"]`).value,
+            };
+
+            if (productType === 'simple') {
+                product.quantity = productEl.querySelector('.simple-quantity').value;
+                product.purchase_price = productEl.querySelector('.simple-purchase-price').value;
+                product.selling_price = productEl.querySelector('.simple-selling-price').value;
+            } else {
+                product.variants = [];
+                productEl.querySelectorAll('.variant-item').forEach((variantEl) => {
+                    const variantIndex = variantEl.getAttribute('data-variant-index');
+                    product.variants.push({
+                        variant_name: variantEl.querySelector(`input[name="products[${productIndex}][variants][${variantIndex}][variant_name]"]`).value,
+                        code: variantEl.querySelector('.variant-code').value,
+                        quantity: variantEl.querySelector('.variant-quantity').value,
+                        purchase_price: variantEl.querySelector('.variant-purchase-price').value,
+                        selling_price: variantEl.querySelector('.variant-selling-price').value,
+                    });
+                });
+            }
+
+            formData.products.push(product);
+        });
+
+        localStorage.setItem(CACHE_KEY, JSON.stringify(formData));
+        console.log('Data saved to cache');
+    }
+
+    function loadFromCache() {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (!cached) return false;
+
+        try {
+            const data = JSON.parse(cached);
+
+            // Restore basic fields
+            if (data.invoice_date) {
+                document.querySelector('input[name="invoice_date"]').value = data.invoice_date;
+            }
+            if (data.supplier_id) {
+                document.querySelector('#supplier_select').value = data.supplier_id;
+                $('#supplier_select').trigger('change');
+            }
+            if (data.payment_method) {
+                const paymentRadio = document.querySelector(`input[name="payment_method"][value="${data.payment_method}"]`);
+                if (paymentRadio) {
+                    paymentRadio.checked = true;
+                    paymentRadio.dispatchEvent(new Event('change'));
+                }
+            }
+            if (data.cashbox_id) {
+                document.querySelector('#cashbox_select').value = data.cashbox_id;
+            }
+            if (data.notes) {
+                document.querySelector('textarea[name="notes"]').value = data.notes;
+            }
+
+            // Restore products
+            if (data.products && data.products.length > 0) {
+                data.products.forEach(product => {
+                    addProductFromCache(product);
+                });
+                return true;
+            }
+        } catch (error) {
+            console.error('Error loading from cache:', error);
+            localStorage.removeItem(CACHE_KEY);
+        }
+        return false;
+    }
+
+    function addProductFromCache(productData) {
+        const productHTML = getProductTemplate(productData.index);
+        productsContainer.insertAdjacentHTML('beforeend', productHTML);
+        emptyState.style.display = 'none';
+
+        const newProduct = productsContainer.lastElementChild;
+
+        // Fill product data
+        newProduct.querySelector('.product-code').value = productData.code || '';
+        newProduct.querySelector(`input[name="products[${productData.index}][name]"]`).value = productData.name || '';
+        newProduct.querySelector(`input[name="products[${productData.index}][sku]"]`).value = productData.sku || '';
+
+        // Set product type
+        const typeRadio = newProduct.querySelector(`input[name="products[${productData.index}][type]"][value="${productData.type}"]`);
+        if (typeRadio) {
+            typeRadio.checked = true;
+            typeRadio.dispatchEvent(new Event('change'));
+        }
+
+        if (productData.type === 'simple') {
+            newProduct.querySelector('.simple-quantity').value = productData.quantity || '';
+            newProduct.querySelector('.simple-purchase-price').value = productData.purchase_price || '';
+            newProduct.querySelector('.simple-selling-price').value = productData.selling_price || '';
+            calculateSimpleProfit(newProduct);
+        } else if (productData.variants && productData.variants.length > 0) {
+            productData.variants.forEach((variantData, variantIndex) => {
+                const variantHTML = getVariantTemplate(productData.index, variantIndex);
+                const variantsContainer = newProduct.querySelector('.variants-container');
+                const emptyVariantsState = newProduct.querySelector('.empty-variants-state');
+
+                variantsContainer.insertAdjacentHTML('beforeend', variantHTML);
+                emptyVariantsState.style.display = 'none';
+
+                const newVariant = variantsContainer.lastElementChild;
+
+                // Fill variant data
+                newVariant.querySelector(`input[name="products[${productData.index}][variants][${variantIndex}][variant_name]"]`).value = variantData.variant_name || '';
+                newVariant.querySelector('.variant-code').value = variantData.code || '';
+                newVariant.querySelector('.variant-quantity').value = variantData.quantity || '';
+                newVariant.querySelector('.variant-purchase-price').value = variantData.purchase_price || '';
+                newVariant.querySelector('.variant-selling-price').value = variantData.selling_price || '';
+
+                calculateVariantProfit(newVariant);
+                attachVariantEvents(newVariant, newProduct);
+            });
+        }
+
+        attachProductEvents(newProduct, productData.index);
+
+        if (productData.index >= productCounter) {
+            productCounter = parseInt(productData.index) + 1;
+        }
+    }
+
+    function clearCache() {
+        localStorage.removeItem(CACHE_KEY);
+        console.log('Cache cleared');
+    }
+
+    function setupAutoSave() {
+        const form = document.getElementById('purchaseInvoiceForm');
+
+        // Debounce function to avoid too frequent saves
+        let saveTimeout;
+        const debouncedSave = () => {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(saveToCache, 500);
+        };
+
+        // Listen to form changes
+        form.addEventListener('input', debouncedSave);
+        form.addEventListener('change', debouncedSave);
     }
 
     // Product Template
@@ -372,6 +591,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                    dir="ltr" required>
                             <button type="button" class="btn btn-outline-secondary generate-code-btn">
                                 ${window.generateLabel || 'Generate'}
+                            </button>
+                            <button type="button" class="btn btn-outline-primary print-barcode-btn" title="${window.printBarcodeLabel || 'Print Barcode'}">
+                                <i class="ti ti-printer"></i>
                             </button>
                         </div>
                     </div>
@@ -490,6 +712,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                    class="form-control variant-code" dir="ltr">
                             <button type="button" class="btn btn-outline-secondary generate-variant-code-btn">
                                 ${window.generateLabel || 'Generate'}
+                            </button>
+                            <button type="button" class="btn btn-outline-primary print-variant-barcode-btn" title="${window.printBarcodeLabel || 'Print Barcode'}">
+                                <i class="ti ti-printer"></i>
                             </button>
                         </div>
                     </div>
@@ -627,11 +852,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 emptyState.style.display = 'block';
             }
             updateInvoiceTotals();
+            saveToCache(); // Save after removing product
         });
 
         // Generate code
         productElement.querySelector('.generate-code-btn').addEventListener('click', function() {
             productElement.querySelector('.product-code').value = generateCode();
+        });
+
+        // Print barcode
+        productElement.querySelector('.print-barcode-btn').addEventListener('click', function() {
+            const code = productElement.querySelector('.product-code').value;
+            const name = productElement.querySelector(`input[name="products[${index}][name]"]`).value;
+            const price = productElement.querySelector('.simple-selling-price').value || '0';
+
+            if (!code) {
+                alert(window.pleaseEnterCodeLabel || 'Please enter product code first');
+                return;
+            }
+            if (!name) {
+                alert(window.pleaseEnterNameLabel || 'Please enter product name first');
+                return;
+            }
+
+            openPrintBarcodeModal(code, name, price);
         });
 
         // Product type change
@@ -732,11 +976,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 emptyVariantsState.style.display = 'block';
             }
             updateInvoiceTotals();
+            saveToCache(); // Save after removing variant
         });
 
         // Generate variant code
         variantElement.querySelector('.generate-variant-code-btn').addEventListener('click', function() {
             variantElement.querySelector('.variant-code').value = generateCode();
+        });
+
+        // Print variant barcode
+        variantElement.querySelector('.print-variant-barcode-btn').addEventListener('click', function() {
+            const variantIndex = variantElement.getAttribute('data-variant-index');
+            const productIndex = productElement.getAttribute('data-product-index');
+
+            const code = variantElement.querySelector('.variant-code').value;
+            const productName = productElement.querySelector(`input[name="products[${productIndex}][name]"]`).value;
+            const variantName = variantElement.querySelector(`input[name="products[${productIndex}][variants][${variantIndex}][variant_name]"]`).value;
+            const price = variantElement.querySelector('.variant-selling-price').value || '0';
+
+            const fullName = variantName ? `${productName} - ${variantName}` : productName;
+
+            if (!code) {
+                alert(window.pleaseEnterCodeLabel || 'Please enter variant code first');
+                return;
+            }
+            if (!productName) {
+                alert(window.pleaseEnterNameLabel || 'Please enter product name first');
+                return;
+            }
+
+            openPrintBarcodeModal(code, fullName, price);
         });
 
         // Calculate variant profit
@@ -788,6 +1057,8 @@ document.addEventListener('DOMContentLoaded', function() {
             alert(window.variableProductNoVariantsLabel || 'Variable products must have at least one variant.');
             return false;
         }
+
+        // Don't clear cache here - it will be cleared after successful save
     });
 
     // Add Supplier Modal
@@ -856,6 +1127,58 @@ document.addEventListener('DOMContentLoaded', function() {
         supplierError.classList.add('d-none');
     });
 
+    // ========== Print Barcode Functionality ==========
+    let currentBarcodeData = null;
+    const printBarcodeModal = new bootstrap.Modal(document.getElementById('printBarcodeModal'));
+
+    function openPrintBarcodeModal(code, name, price) {
+        currentBarcodeData = { code, name, price };
+        document.getElementById('barcode_code_display').value = code;
+        document.getElementById('barcode_name_display').value = name;
+        document.getElementById('barcode_copies').value = 1;
+        printBarcodeModal.show();
+    }
+
+    document.getElementById('confirmPrintBarcodeBtn').addEventListener('click', function() {
+        if (!currentBarcodeData) return;
+
+        const copies = parseInt(document.getElementById('barcode_copies').value) || 1;
+
+        // Build barcode data array
+        const barcodes = [];
+        for (let i = 0; i < copies; i++) {
+            barcodes.push({
+                code: currentBarcodeData.code,
+                name: currentBarcodeData.name,
+                price: parseFloat(currentBarcodeData.price) || 0
+            });
+        }
+
+        // Send to server to generate barcode print page
+        fetch('{{ route('inventory.bulk-barcode') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'text/html'
+            },
+            body: JSON.stringify({ barcodes: barcodes })
+        })
+        .then(response => response.text())
+        .then(html => {
+            // Open new window with the barcode print page
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(html);
+            printWindow.document.close();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء إعداد صفحة الطباعة');
+        });
+
+        printBarcodeModal.hide();
+    });
+
     // Set translation labels
     window.productLabel = '{{ __('messages.product') }}';
     window.deleteLabel = '{{ __('messages.delete') }}';
@@ -883,6 +1206,46 @@ document.addEventListener('DOMContentLoaded', function() {
     window.supplierNameRequiredLabel = '{{ __('messages.supplier_name_required') }}';
     window.errorOccurredLabel = '{{ __('messages.error_occurred') }}';
     window.productImageLabel = '{{ __('messages.product_image') }}';
+    window.printBarcodeLabel = '{{ __('messages.print_barcode') }}';
+    window.pleaseEnterCodeLabel = '{{ __('messages.please_enter_code') }}';
+    window.pleaseEnterNameLabel = '{{ __('messages.please_enter_name') }}';
+
+    // ========== Initialize ==========
+    // Clear draft button
+    document.getElementById('clearDraftBtn').addEventListener('click', function() {
+        if (confirm('هل أنت متأكد من مسح المسودة المحفوظة؟ لا يمكن التراجع عن هذا الإجراء.')) {
+            clearCache();
+            location.reload();
+        }
+    });
+
+    // Load cached data on page load
+    const hasCachedData = loadFromCache();
+    if (hasCachedData) {
+        // Show notification that data was restored
+        const notification = document.createElement('div');
+        notification.className = 'alert alert-info alert-dismissible fade show position-fixed';
+        notification.style.cssText = 'top: 80px; left: 50%; transform: translateX(-50%); z-index: 9999; max-width: 400px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);';
+        notification.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="ti ti-info-circle me-2" style="font-size: 1.5rem;"></i>
+                <div>
+                    <strong>تم استرجاع البيانات المحفوظة</strong>
+                    <p class="mb-0 small">تم تحميل المسودة السابقة تلقائياً</p>
+                </div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 150);
+        }, 5000);
+    }
+
+    // Setup auto-save
+    setupAutoSave();
 });
 </script>
 @endpush

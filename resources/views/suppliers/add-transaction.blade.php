@@ -54,17 +54,17 @@
                             <div class="col-md-6">
                                 <input type="radio" class="btn-check" name="type" id="type_deposit" value="deposit" {{ old('type', 'deposit') == 'deposit' ? 'checked' : '' }}>
                                 <label class="btn btn-outline-success w-100 py-3" for="type_deposit">
-                                    <i class="ti ti-arrow-down-left fs-3 d-block mb-2"></i>
-                                    <strong>{{ __('messages.deposit') }}</strong>
-                                    <small class="d-block text-muted mt-1">{{ __('messages.payment_to_supplier') }}</small>
+                                    <i class="ti ti-cash fs-3 d-block mb-2"></i>
+                                    <strong>دفع للمورد</strong>
+                                    <small class="d-block text-muted mt-1">سداد دين / تسديد فاتورة</small>
                                 </label>
                             </div>
                             <div class="col-md-6">
                                 <input type="radio" class="btn-check" name="type" id="type_withdrawal" value="withdrawal" {{ old('type') == 'withdrawal' ? 'checked' : '' }}>
                                 <label class="btn btn-outline-danger w-100 py-3" for="type_withdrawal">
-                                    <i class="ti ti-arrow-up-right fs-3 d-block mb-2"></i>
-                                    <strong>{{ __('messages.withdrawal') }}</strong>
-                                    <small class="d-block text-muted mt-1">{{ __('messages.credit_purchase') }}</small>
+                                    <i class="ti ti-shopping-cart fs-3 d-block mb-2"></i>
+                                    <strong>شراء بالآجل</strong>
+                                    <small class="d-block text-muted mt-1">زيادة الدين على المورد</small>
                                 </label>
                             </div>
                         </div>

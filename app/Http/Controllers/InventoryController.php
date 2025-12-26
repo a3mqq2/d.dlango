@@ -150,6 +150,13 @@ class InventoryController extends Controller
 
     public function bulkBarcode(Request $request)
     {
+        // Check if barcodes are sent directly (from purchase invoice)
+        if ($request->has('barcodes')) {
+            $barcodes = $request->input('barcodes');
+            return view('inventory.print-bulk-barcode', compact('barcodes'));
+        }
+
+        // Otherwise, use the old items format
         $validated = $request->validate([
             'items' => ['required', 'array', 'min:1'],
             'items.*.type' => ['required', 'in:product,variant'],

@@ -186,4 +186,15 @@
     height: 35px;
 }
 </style>
+
+@push('scripts')
+<script>
+// Clear purchase invoice draft cache when viewing the list
+// This ensures the cache is cleared after successfully creating an invoice
+document.addEventListener('DOMContentLoaded', function() {
+    const CACHE_KEY = 'purchase_invoice_draft';
+    localStorage.removeItem(CACHE_KEY);
+});
+</script>
+@endpush
 @endsection

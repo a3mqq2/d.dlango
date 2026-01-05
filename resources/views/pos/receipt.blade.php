@@ -279,7 +279,7 @@ $barcodeBase64='data:image/png;base64,'.DNS1D::getBarcodePNG($sale->invoice_numb
 </div>
 
 <div class="brand">
-شركة حلول لتقنية المعلومات HULUL-EPOS
+    شركة Safe Tech 
 </div>
 
 <button class="back-btn" autofocus onclick="goBack()">رجوع</button>

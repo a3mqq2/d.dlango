@@ -71,6 +71,23 @@
                         <i class="ti ti-barcode me-1"></i>
                         {{ __('messages.print_barcode') }}
                     </a>
+                    @if(auth()->user()->is_admin || auth()->user()->hasPermission('inventory.edit'))
+                    <a href="{{ route('inventory.edit', $product) }}" class="btn btn-warning">
+                        <i class="ti ti-edit me-1"></i>
+                        {{ __('messages.edit_product') }}
+                    </a>
+                    @endif
+                    @if(auth()->user()->is_admin || auth()->user()->hasPermission('inventory.delete'))
+                    <form action="{{ route('inventory.destroy', $product) }}" method="POST"
+                          onsubmit="return confirm('{{ __('messages.confirm_delete_product') }}')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-outline-danger w-100">
+                            <i class="ti ti-trash me-1"></i>
+                            {{ __('messages.delete_product') }}
+                        </button>
+                    </form>
+                    @endif
                     <a href="{{ route('inventory.index') }}" class="btn btn-outline-secondary">
                         <i class="ti ti-arrow-{{ app()->getLocale() == 'ar' ? 'right' : 'left' }} me-1"></i>
                         {{ __('messages.back_to_inventory') }}

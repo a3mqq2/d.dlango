@@ -84,6 +84,9 @@ class Permission extends Model
             ],
             'inventory' => [
                 ['name' => 'inventory.view', 'ar' => 'عرض المخزون', 'en' => 'View Inventory'],
+                ['name' => 'inventory.create', 'ar' => 'إضافة منتج', 'en' => 'Create Product'],
+                ['name' => 'inventory.edit', 'ar' => 'تعديل منتج', 'en' => 'Edit Product'],
+                ['name' => 'inventory.delete', 'ar' => 'حذف منتج', 'en' => 'Delete Product'],
                 ['name' => 'inventory.barcode', 'ar' => 'طباعة الباركود', 'en' => 'Print Barcode'],
             ],
             'finance' => [

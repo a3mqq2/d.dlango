@@ -101,9 +101,20 @@ Route::middleware('auth')->group(function () {
     });
 
     // Inventory Management
+    Route::middleware('permission:inventory.create')->group(function () {
+        Route::get('inventory/create', [InventoryController::class, 'create'])->name('inventory.create');
+        Route::post('inventory', [InventoryController::class, 'store'])->name('inventory.store');
+    });
     Route::middleware('permission:inventory.view')->group(function () {
         Route::get('inventory', [InventoryController::class, 'index'])->name('inventory.index');
         Route::get('inventory/{product}', [InventoryController::class, 'show'])->name('inventory.show');
+    });
+    Route::middleware('permission:inventory.edit')->group(function () {
+        Route::get('inventory/{product}/edit', [InventoryController::class, 'edit'])->name('inventory.edit');
+        Route::put('inventory/{product}', [InventoryController::class, 'update'])->name('inventory.update');
+    });
+    Route::middleware('permission:inventory.delete')->group(function () {
+        Route::delete('inventory/{product}', [InventoryController::class, 'destroy'])->name('inventory.destroy');
     });
     Route::middleware('permission:inventory.barcode')->group(function () {
         Route::get('inventory/{product}/barcode', [InventoryController::class, 'barcodeForm'])->name('inventory.barcode-form');

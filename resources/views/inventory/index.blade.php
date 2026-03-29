@@ -163,7 +163,15 @@
                     <i class="ti ti-packages me-2"></i>
                     {{ __('messages.products_list') }}
                 </h5>
-                <span class="badge bg-secondary">{{ $products->total() }} {{ __('messages.product') }}</span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-secondary">{{ $products->total() }} {{ __('messages.product') }}</span>
+                    @if(auth()->user()->is_admin || auth()->user()->hasPermission('inventory.create'))
+                    <a href="{{ route('inventory.create') }}" class="btn btn-sm btn-primary">
+                        <i class="ti ti-plus me-1"></i>
+                        {{ __('messages.add_product') }}
+                    </a>
+                    @endif
+                </div>
             </div>
             <div class="card-body p-0">
                 @if($products->count() > 0)
@@ -261,6 +269,12 @@
                                                    class="btn btn-outline-primary" title="{{ __('messages.details') }}">
                                                     <i class="ti ti-eye"></i>
                                                 </a>
+                                                @if(auth()->user()->is_admin || auth()->user()->hasPermission('inventory.edit'))
+                                                <a href="{{ route('inventory.edit', $product) }}"
+                                                   class="btn btn-outline-warning" title="{{ __('messages.edit') }}">
+                                                    <i class="ti ti-edit"></i>
+                                                </a>
+                                                @endif
                                                 <a href="{{ route('inventory.barcode-form', $product) }}"
                                                    class="btn btn-outline-secondary" title="{{ __('messages.print_barcode') }}">
                                                     <i class="ti ti-barcode"></i>

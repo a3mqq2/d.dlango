@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class InventoryController extends Controller
 {
@@ -105,6 +107,207 @@ class InventoryController extends Controller
             'lowStockCount',
             'totalInventoryValue'
         ));
+    }
+
+    public function create()
+    {
+        $productCode = Product::generateProductCode();
+
+        return view('inventory.create', compact('productCode'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'type' => ['required', 'in:simple,variable'],
+            'code' => ['required', 'string', 'size:4', 'unique:products,code'],
+            'name' => ['required', 'string', 'max:255'],
+            'sku' => ['nullable', 'string', 'max:255'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp'],
+            'quantity' => ['required_if:type,simple', 'nullable', 'integer', 'min:0'],
+            'purchase_price' => ['required_if:type,simple', 'nullable', 'numeric', 'min:0'],
+            'selling_price' => ['required_if:type,simple', 'nullable', 'numeric', 'min:0'],
+            'variants' => ['required_if:type,variable', 'nullable', 'array', 'min:1'],
+            'variants.*.code' => ['required', 'string', 'size:4'],
+            'variants.*.variant_name' => ['required', 'string'],
+            'variants.*.quantity' => ['required', 'integer', 'min:0'],
+            'variants.*.purchase_price' => ['required', 'numeric', 'min:0'],
+            'variants.*.selling_price' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('products', 'public');
+            }
+
+            $productData = [
+                'code' => $validated['code'],
+                'name' => $validated['name'],
+                'sku' => $validated['sku'] ?? null,
+                'type' => $validated['type'],
+                'image' => $imagePath,
+            ];
+
+            if ($validated['type'] === 'simple') {
+                $productData['quantity'] = $validated['quantity'];
+                $productData['purchase_price'] = $validated['purchase_price'];
+                $productData['selling_price'] = $validated['selling_price'];
+                $productData['profit_per_unit'] = $validated['selling_price'] - $validated['purchase_price'];
+            } else {
+                $productData['quantity'] = 0;
+                $productData['purchase_price'] = 0;
+                $productData['selling_price'] = 0;
+                $productData['profit_per_unit'] = 0;
+            }
+
+            $product = Product::create($productData);
+
+            if ($validated['type'] === 'variable' && !empty($validated['variants'])) {
+                foreach ($validated['variants'] as $variantData) {
+                    ProductVariant::create([
+                        'product_id' => $product->id,
+                        'code' => $variantData['code'],
+                        'variant_name' => $variantData['variant_name'],
+                        'quantity' => $variantData['quantity'],
+                        'purchase_price' => $variantData['purchase_price'],
+                        'selling_price' => $variantData['selling_price'],
+                        'profit_per_unit' => $variantData['selling_price'] - $variantData['purchase_price'],
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('inventory.show', $product)
+                ->with('success', __('messages.product_created'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->with('error', $e->getMessage());
+        }
+    }
+
+    public function edit(Product $product)
+    {
+        $product->load('variants');
+
+        return view('inventory.edit', compact('product'));
+    }
+
+    public function update(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'sku' => ['nullable', 'string', 'max:255'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp'],
+            'quantity' => ['required_if:type,simple', 'nullable', 'integer', 'min:0'],
+            'purchase_price' => ['required_if:type,simple', 'nullable', 'numeric', 'min:0'],
+            'selling_price' => ['required_if:type,simple', 'nullable', 'numeric', 'min:0'],
+            'variants' => ['nullable', 'array'],
+            'variants.*.id' => ['nullable', 'integer'],
+            'variants.*.code' => ['required', 'string', 'size:4'],
+            'variants.*.variant_name' => ['required', 'string'],
+            'variants.*.quantity' => ['required', 'integer', 'min:0'],
+            'variants.*.purchase_price' => ['required', 'numeric', 'min:0'],
+            'variants.*.selling_price' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $updateData = [
+                'name' => $validated['name'],
+                'sku' => $validated['sku'] ?? null,
+            ];
+
+            if ($request->hasFile('image')) {
+                if ($product->image) {
+                    Storage::disk('public')->delete($product->image);
+                }
+                $updateData['image'] = $request->file('image')->store('products', 'public');
+            }
+
+            if ($product->type === 'simple') {
+                $updateData['quantity'] = $validated['quantity'];
+                $updateData['purchase_price'] = $validated['purchase_price'];
+                $updateData['selling_price'] = $validated['selling_price'];
+                $updateData['profit_per_unit'] = $validated['selling_price'] - $validated['purchase_price'];
+            }
+
+            $product->update($updateData);
+
+            if ($product->type === 'variable' && isset($validated['variants'])) {
+                $existingVariantIds = $product->variants->pluck('id')->toArray();
+                $updatedVariantIds = [];
+
+                foreach ($validated['variants'] as $variantData) {
+                    if (!empty($variantData['id'])) {
+                        $variant = ProductVariant::find($variantData['id']);
+                        if ($variant && $variant->product_id === $product->id) {
+                            $variant->update([
+                                'code' => $variantData['code'],
+                                'variant_name' => $variantData['variant_name'],
+                                'quantity' => $variantData['quantity'],
+                                'purchase_price' => $variantData['purchase_price'],
+                                'selling_price' => $variantData['selling_price'],
+                                'profit_per_unit' => $variantData['selling_price'] - $variantData['purchase_price'],
+                            ]);
+                            $updatedVariantIds[] = $variant->id;
+                        }
+                    } else {
+                        $newVariant = ProductVariant::create([
+                            'product_id' => $product->id,
+                            'code' => $variantData['code'],
+                            'variant_name' => $variantData['variant_name'],
+                            'quantity' => $variantData['quantity'],
+                            'purchase_price' => $variantData['purchase_price'],
+                            'selling_price' => $variantData['selling_price'],
+                            'profit_per_unit' => $variantData['selling_price'] - $variantData['purchase_price'],
+                        ]);
+                        $updatedVariantIds[] = $newVariant->id;
+                    }
+                }
+
+                $variantsToDelete = array_diff($existingVariantIds, $updatedVariantIds);
+                ProductVariant::whereIn('id', $variantsToDelete)->delete();
+            }
+
+            DB::commit();
+
+            return redirect()->route('inventory.show', $product)
+                ->with('success', __('messages.product_updated'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->with('error', $e->getMessage());
+        }
+    }
+
+    public function destroy(Product $product)
+    {
+        if ($product->purchaseInvoiceItems()->exists()) {
+            return back()->with('error', __('messages.product_has_sales'));
+        }
+
+        DB::beginTransaction();
+
+        try {
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+
+            $product->variants()->delete();
+            $product->delete();
+
+            DB::commit();
+
+            return redirect()->route('inventory.index')
+                ->with('success', __('messages.product_deleted'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', $e->getMessage());
+        }
     }
 
     public function show(Product $product)

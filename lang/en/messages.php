@@ -1016,4 +1016,17 @@ return [
     'remove_last_item' => 'Remove Last Item',
     'new_invoice' => 'New Invoice',
     'toggle_payment_method' => 'Toggle Payment Method',
+
+    // Inventory CRUD
+    'add_product_to_inventory' => 'Add Product to Inventory',
+    'edit_product' => 'Edit Product',
+    'delete_product' => 'Delete Product',
+    'product_created' => 'Product created successfully',
+    'product_updated' => 'Product updated successfully',
+    'product_deleted' => 'Product deleted successfully',
+    'confirm_delete_product' => 'Are you sure you want to delete this product?',
+    'product_has_sales' => 'Cannot delete product with associated sales',
+    'product_info' => 'Product Information',
+    'pricing_info' => 'Pricing Information',
+    'initial_quantity' => 'Initial Quantity',
 ];

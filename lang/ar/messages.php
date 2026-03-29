@@ -1042,4 +1042,17 @@ return [
     'remove_last_item' => 'حذف آخر منتج',
     'new_invoice' => 'فاتورة جديدة',
     'toggle_payment_method' => 'تبديل طريقة الدفع',
+
+    // Inventory CRUD
+    'add_product_to_inventory' => 'إضافة منتج للمخزون',
+    'edit_product' => 'تعديل المنتج',
+    'delete_product' => 'حذف المنتج',
+    'product_created' => 'تم إضافة المنتج بنجاح',
+    'product_updated' => 'تم تحديث المنتج بنجاح',
+    'product_deleted' => 'تم حذف المنتج بنجاح',
+    'confirm_delete_product' => 'هل أنت متأكد من حذف هذا المنتج؟',
+    'product_has_sales' => 'لا يمكن حذف المنتج لوجود مبيعات مرتبطة به',
+    'product_info' => 'معلومات المنتج',
+    'pricing_info' => 'معلومات التسعير',
+    'initial_quantity' => 'الكمية الابتدائية',
 ];
